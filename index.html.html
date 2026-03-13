@@ -1,0 +1,3225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Agenda Graziély">
+<title>Agenda Pilates e Fiso – Graziély</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --pink:#d4789e;--pink-light:#fce8f3;--pink-mid:#e8a4bf;--pink-dark:#b85c82;
+  --teal:#5ba4a4;--teal-dark:#3d7a7a;--teal-light:#e0f5f5;
+  --lav:#9b7fd4;--lav-light:#ede8fc;
+  --orange:#e8973a;--orange-light:#fef3e2;
+  --green:#2da88a;--green-light:#e0f7f2;
+  --red:#e05555;--red-light:#ffeeee;
+  --bg:#fdf4f7;--white:#fff;--gray:#8a8a9a;--text:#3a3a4a;
+  --warn:#f59e0b;--warn-light:#fffbeb;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;}
+
+
+/* ── EVOLUÇÃO ── */
+.evol-aluno-card{background:var(--white);border-radius:14px;padding:14px 16px;margin:0 16px 10px;cursor:pointer;box-shadow:0 2px 8px rgba(212,120,158,.07);transition:transform .15s;display:flex;align-items:center;gap:12px;}
+.evol-aluno-card:active{transform:scale(.98);}
+.evol-entry{background:var(--white);border-radius:14px;padding:14px 16px;margin:0 16px 10px;box-shadow:0 2px 6px rgba(212,120,158,.06);}
+.evol-entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.evol-entry-date{font-size:.72rem;font-weight:600;color:var(--teal-dark);}
+.evol-entry-mod{font-size:.62rem;padding:2px 8px;border-radius:10px;font-weight:600;}
+.evol-mod-pilates{background:var(--pink-light);color:var(--pink-dark);}
+.evol-mod-fisio{background:var(--teal-light);color:var(--teal-dark);}
+.evol-mod-massa{background:var(--lav-light);color:var(--lav);}
+.evol-section{margin-bottom:10px;}
+.evol-section-lbl{font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:4px;}
+.evol-section-val{font-size:.85rem;color:var(--text);line-height:1.5;}
+.dor-bar{display:flex;gap:4px;margin-top:4px;}
+.dor-dot{width:24px;height:24px;border-radius:50%;border:2px solid #eee;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all .15s;}
+.dor-dot.sel{border-color:transparent;color:white;}
+.month-header{font-family:'Playfair Display',serif;font-style:italic;color:var(--teal-dark);font-size:.9rem;margin:16px 16px 8px;padding-bottom:5px;border-bottom:1px solid var(--pink-light);}
+.evol-del-btn{background:none;border:none;color:#ddd;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px;}
+.evol-del-btn:hover{color:var(--red);background:var(--red-light);}
+.foto-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.foto-thumb{width:72px;height:72px;border-radius:10px;object-fit:cover;border:2px solid var(--pink-light);cursor:pointer;}
+.foto-input-btn{width:72px;height:72px;border-radius:10px;border:2px dashed rgba(212,120,158,.3);background:var(--pink-light);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem;color:var(--pink);gap:2px;}
+
+
+/* ── FOTO PERFIL ── */
+.foto-perfil-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:16px;}
+.foto-perfil-circle{width:82px;height:82px;border-radius:50%;object-fit:cover;border:3px solid var(--pink-light);cursor:pointer;}
+.foto-perfil-placeholder{width:82px;height:82px;border-radius:50%;background:var(--pink-light);border:3px dashed rgba(212,120,158,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:var(--pink);font-size:.62rem;gap:2px;}
+.foto-perfil-lbl{font-size:.68rem;color:var(--teal);margin-top:6px;cursor:pointer;}
+
+
+/* ── INFO PACOTE NO AGENDAMENTO ── */
+.pacote-info-box{border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.pacote-info-ok{background:#e8f8f4;border:1.5px solid #2da88a;}
+.pacote-info-warn{background:#fff8e1;border:1.5px solid #f59e0b;}
+.pacote-info-esgot{background:#fdecea;border:1.5px solid #e05555;}
+.prog-bar-wrap{background:rgba(255,255,255,.6);border-radius:20px;height:8px;margin:8px 0 4px;overflow:hidden;}
+.prog-bar-fill{height:100%;border-radius:20px;transition:width .4s;}
+
+
+/* ── SERVIÇOS MÚLTIPLOS ── */
+.servico-card{background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:10px;border:1.5px solid rgba(212,120,158,.15);}
+.servico-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.servico-tag{font-size:.62rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px;}
+.servico-pilates{background:var(--pink-light);color:var(--pink-dark);}
+.servico-fisio{background:var(--teal-light);color:var(--teal-dark);}
+.servico-massa{background:var(--lav-light);color:var(--lav);}
+.btn-add-servico{width:100%;padding:11px;background:white;border:2px dashed rgba(91,164,164,.3);border-radius:12px;color:var(--teal-dark);font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;margin-bottom:10px;}
+.btn-rm-servico{background:none;border:none;color:#ddd;cursor:pointer;font-size:1rem;padding:2px 6px;border-radius:6px;}
+.btn-rm-servico:hover{color:var(--red);}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,#fce8f3 0%,#e8f5f5 100%);padding:16px 20px 12px;border-bottom:1px solid rgba(212,120,158,.2);}
+.hb{display:flex;align-items:center;gap:10px;}
+.brand h1{font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;color:var(--teal-dark);}
+.brand span{font-size:.6rem;color:var(--gray);letter-spacing:2px;text-transform:uppercase;}
+.hdate{margin-left:auto;text-align:right;}
+.hdate .lbl{font-size:.6rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;}
+.hdate .val{font-size:.85rem;color:var(--teal-dark);font-weight:600;}
+.hdate .cnt{font-size:.7rem;color:var(--pink);font-weight:500;}
+
+/* ── PAY BANNER ── */
+.pay-banner{background:linear-gradient(135deg,#fffbeb,#fef3e2);border-bottom:2px solid var(--warn);padding:10px 16px;display:none;}
+.pay-banner.visible{display:block;}
+.pay-banner-title{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--warn);font-weight:600;}
+.pbi{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(245,158,11,.1);}
+.pbi:last-child{border:none;}
+.pbi .pname{font-size:.82rem;font-weight:600;}
+.pbi .pdue{font-size:.72rem;color:var(--warn);}
+.badge{font-size:.6rem;padding:2px 8px;border-radius:10px;font-weight:700;}
+.badge-ov{background:#fee2e2;color:var(--red);}
+.badge-soon{background:#fffbeb;color:var(--warn);}
+
+/* ── NAV ── */
+nav{display:flex;background:var(--white);border-bottom:1px solid rgba(212,120,158,.15);overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+nav button{flex:1;min-width:64px;padding:11px 4px;border:none;background:none;font-family:'DM Sans',sans-serif;font-size:.7rem;cursor:pointer;color:var(--gray);border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;}
+nav button.active{color:var(--pink);border-bottom-color:var(--pink);font-weight:600;}
+
+/* ── STATS ── */
+.stats{display:flex;gap:7px;padding:14px 14px 0;}
+.stat{flex:1;background:var(--white);border-radius:14px;padding:10px 4px;text-align:center;border:1px solid rgba(212,120,158,.15);box-shadow:0 2px 8px rgba(212,120,158,.08);}
+.stat .ico{font-size:.95rem;}
+.stat .num{font-size:1.1rem;font-weight:700;color:var(--teal-dark);}
+.stat .lbl{font-size:.52rem;color:var(--gray);letter-spacing:.5px;text-transform:uppercase;}
+
+/* ── LABELS ── */
+.sec-lbl{font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:14px 16px 8px;}
+
+/* ── APPOINTMENT CARDS ── */
+.appt-card{display:flex;align-items:center;gap:12px;background:var(--white);border-radius:14px;padding:12px 14px;margin:0 16px 8px;cursor:pointer;box-shadow:0 2px 8px rgba(212,120,158,.07);transition:transform .15s;}
+.appt-card:active{transform:scale(.98);}
+.appt-card.absent{opacity:.55;border-style:dashed;}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.72rem;font-weight:700;flex-shrink:0;}
+.appt-info{flex:1;min-width:0;}
+.appt-name{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.appt-sub{font-size:.72rem;color:var(--gray);}
+.appt-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
+.tag{display:inline-block;font-size:.58rem;padding:2px 7px;border-radius:10px;font-weight:600;}
+.tag-rep{background:#fef3e2;color:var(--orange);}
+.tag-faltou{background:var(--red-light);color:var(--red);}
+.tag-avisou{background:#fff7ed;color:#c2700f;}
+.tag-fixo{background:var(--teal-light);color:var(--teal-dark);}
+.arr{color:#ccc;font-size:18px;flex-shrink:0;}
+
+/* ── DATE GROUP ── */
+.date-group{font-style:italic;color:var(--teal-dark);font-size:.82rem;margin:14px 16px 8px;padding-bottom:5px;border-bottom:1px solid var(--pink-light);display:flex;align-items:center;gap:8px;}
+.today-badge{background:var(--pink);color:white;font-size:.58rem;padding:2px 7px;border-radius:20px;letter-spacing:1px;font-style:normal;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:#aaa;font-style:italic;font-size:.88rem;}
+.empty button{margin-top:12px;background:var(--pink);color:white;border:none;padding:9px 22px;border-radius:20px;cursor:pointer;font-size:.8rem;font-family:'DM Sans',sans-serif;}
+
+/* ── CALENDAR ── */
+.cal-wrap{background:var(--white);border-radius:16px;margin:16px 16px 12px;padding:16px;box-shadow:0 2px 12px rgba(212,120,158,.1);}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-nav h3{font-family:'Playfair Display',serif;font-style:italic;color:var(--teal-dark);font-size:.95rem;}
+.cal-nav button{background:var(--pink-light);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;color:var(--pink);font-size:16px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;}
+.cal-dow{font-size:.57rem;color:#aaa;padding:4px 0;}
+.cal-day{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;font-size:.78rem;margin:1px auto;position:relative;transition:all .15s;}
+.cal-day.today{background:var(--teal);color:white;font-weight:700;}
+.cal-day.selected{background:var(--pink);color:white;font-weight:700;}
+.dot{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--pink);}
+.cal-day.today .dot,.cal-day.selected .dot{background:white;}
+
+/* ── ALUNO CARD ── */
+.aluno-card{background:var(--white);border-radius:14px;padding:14px 16px;margin:0 16px 10px;cursor:pointer;box-shadow:0 2px 8px rgba(212,120,158,.07);transition:transform .15s;}
+.aluno-card:active{transform:scale(.98);}
+.aluno-top{display:flex;align-items:center;gap:12px;}
+.aluno-name{font-weight:600;font-size:.92rem;}
+.aluno-mod{font-size:.72rem;color:var(--gray);}
+.aluno-footer{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
+.pill{font-size:.62rem;padding:3px 10px;border-radius:20px;font-weight:500;}
+.pill-plano{background:var(--teal-light);color:var(--teal-dark);}
+.pill-venc.ok{background:var(--green-light);color:#1a6e5a;}
+.pill-venc.warn{background:var(--warn-light);color:#b45309;}
+.pill-venc.over{background:var(--red-light);color:var(--red);}
+.pill-dias{background:var(--pink-light);color:var(--pink-dark);}
+.pill-foco{background:var(--lav-light);color:#6b52b0;}
+
+/* ── FALTAS ── */
+.falta-card{background:var(--white);border-radius:14px;padding:14px 16px;margin:0 16px 10px;box-shadow:0 2px 8px rgba(212,120,158,.07);}
+.falta-top{display:flex;align-items:center;gap:12px;}
+.falta-info{flex:1;}
+.falta-name{font-weight:600;font-size:.88rem;}
+.falta-date{font-size:.72rem;color:var(--gray);}
+.falta-actions{display:flex;gap:8px;margin-top:12px;}
+.btn-agendar-rep{flex:1;padding:9px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));border:none;border-radius:10px;color:white;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;}
+.btn-rep-done{flex:1;padding:9px;background:var(--green-light);border:none;border-radius:10px;color:var(--green);font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;}
+
+/* ── PAGAMENTOS ── */
+.pay-card{background:var(--white);border-radius:14px;padding:14px 16px;margin:0 16px 10px;box-shadow:0 2px 8px rgba(212,120,158,.07);}
+.pay-top{display:flex;align-items:center;gap:12px;cursor:pointer;}
+.pay-body{margin-top:12px;padding-top:12px;border-top:1px solid #f0e0ea;display:none;}
+.pay-row{display:flex;justify-content:space-between;padding:5px 0;}
+.pay-row .k{font-size:.72rem;color:var(--gray);}
+.pay-row .v{font-size:.82rem;font-weight:600;}
+.btn-pago{width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,var(--green),#1e9678);border:none;border-radius:10px;color:white;font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:28px;right:22px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--pink),#c4668e);border:none;color:white;font-size:28px;cursor:pointer;box-shadow:0 6px 20px rgba(212,120,158,.5);z-index:100;display:flex;align-items:center;justify-content:center;transition:transform .15s;}
+.fab:active{transform:scale(.93);}
+
+/* ── OVERLAY / SHEET ── */
+.overlay{position:fixed;inset:0;background:rgba(60,40,60,.45);z-index:200;display:flex;align-items:flex-end;}
+.sheet{background:var(--white);border-radius:20px 20px 0 0;padding:24px 20px 48px;width:100%;max-height:94vh;overflow-y:auto;}
+.sheet-title{font-family:'Playfair Display',serif;font-style:italic;font-size:1.15rem;color:var(--teal-dark);font-weight:600;}
+.sheet-sub{font-size:.72rem;color:#aaa;margin-bottom:18px;margin-top:2px;}
+.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;}
+.field-lbl{font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:5px;display:block;}
+.field{width:100%;padding:11px 14px;border:1.5px solid rgba(212,120,158,.25);border-radius:10px;font-size:.9rem;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;margin-bottom:14px;-webkit-appearance:none;}
+.field:focus{border-color:var(--teal);}
+textarea.field{resize:none;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+
+/* day-of-week picker */
+.dow-wrap{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+.dow-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(212,120,158,.3);background:none;font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--gray);transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.dow-btn.sel{background:var(--teal);border-color:var(--teal);color:white;font-weight:700;}
+
+/* color chips */
+.color-chips{display:flex;gap:12px;margin-bottom:14px;}
+.chip{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s;}
+.chip.sel{border-color:var(--text);transform:scale(1.2);}
+
+/* time slots per dow */
+.dow-time-block{background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.dow-time-lbl{font-size:.72rem;font-weight:600;color:var(--teal-dark);margin-bottom:8px;}
+
+/* buttons */
+.btn-save{width:100%;padding:14px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));border:none;border-radius:12px;color:white;font-size:.92rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;box-shadow:0 4px 14px rgba(91,164,164,.4);margin-top:6px;}
+.btn-del{padding:12px 16px;border:1.5px solid #ffcccc;border-radius:12px;background:none;color:var(--red);cursor:pointer;font-size:.82rem;font-family:'DM Sans',sans-serif;}
+.btn-sec{padding:12px 16px;border:1.5px solid rgba(212,120,158,.3);border-radius:12px;background:none;color:var(--pink);cursor:pointer;font-size:.82rem;font-family:'DM Sans',sans-serif;}
+.btn-warn{padding:12px 16px;border:1.5px solid rgba(245,158,11,.3);border-radius:12px;background:none;color:var(--warn);cursor:pointer;font-size:.82rem;font-family:'DM Sans',sans-serif;}
+.btn-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+
+/* info box */
+.info-box{background:var(--teal-light);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:var(--teal-dark);}
+.warn-box{background:var(--warn-light);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:#92400e;}
+
+/* toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.toggle{position:relative;width:44px;height:24px;}
+.toggle input{opacity:0;width:0;height:0;}
+.tslider{position:absolute;inset:0;background:#ddd;border-radius:12px;cursor:pointer;transition:.3s;}
+.tslider:before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:white;border-radius:50%;transition:.3s;}
+.toggle input:checked+.tslider{background:var(--pink);}
+.toggle input:checked+.tslider:before{transform:translateX(20px);}
+
+/* confirm modal */
+.confirm-center{position:fixed;inset:0;background:rgba(60,40,60,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;}
+.confirm-box{background:var(--white);border-radius:20px;padding:28px;width:100%;max-width:320px;}
+.confirm-box h3{font-size:1rem;font-weight:600;margin-bottom:6px;}
+.confirm-box p{font-size:.8rem;color:#aaa;margin-bottom:20px;}
+.confirm-btns{display:flex;gap:10px;}
+.btn-cancel2{flex:1;padding:11px;border:1.5px solid #eee;border-radius:12px;background:none;cursor:pointer;color:#666;font-family:'DM Sans',sans-serif;}
+.btn-ok2{flex:1;padding:11px;border:none;border-radius:12px;color:white;cursor:pointer;font-weight:600;font-family:'DM Sans',sans-serif;}
+
+/* falta motivo selector */
+.motivo-opts{display:flex;gap:10px;margin-bottom:14px;}
+.motivo-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(212,120,158,.25);background:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--gray);transition:all .2s;text-align:center;}
+.motivo-btn.sel-faltou{background:var(--red-light);border-color:var(--red);color:var(--red);font-weight:600;}
+.motivo-btn.sel-avisou{background:#fff7ed;border-color:#c2700f;color:#c2700f;font-weight:600;}
+
+/* toast */
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--teal-dark);color:white;padding:10px 22px;border-radius:20px;font-size:.82rem;box-shadow:0 4px 16px rgba(61,122,122,.4);z-index:400;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+.pb{padding-bottom:100px;}
+
+/* rep picker */
+.rep-date-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;max-height:280px;overflow-y:auto;}
+.rep-slot{padding:10px;border-radius:10px;border:1.5px solid rgba(212,120,158,.2);background:var(--bg);cursor:pointer;transition:all .2s;}
+.rep-slot.sel{background:var(--teal-light);border-color:var(--teal);}
+.rep-slot .rs-day{font-size:.72rem;font-weight:600;color:var(--teal-dark);}
+.rep-slot .rs-time{font-size:.68rem;color:var(--gray);}
+
+.divider{height:1px;background:linear-gradient(to right,transparent,rgba(212,120,158,.2),transparent);margin:4px 16px 0;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="hb">
+    <svg width="40" height="40" viewBox="0 0 100 100">
+      <ellipse cx="30" cy="35" rx="25" ry="18" fill="#e8a4bf" transform="rotate(-20 30 35)"/>
+      <ellipse cx="70" cy="35" rx="25" ry="18" fill="#e8a4bf" transform="rotate(20 70 35)" opacity=".8"/>
+      <ellipse cx="28" cy="32" rx="16" ry="11" fill="#5ba4a4" transform="rotate(-20 28 32)" opacity=".7"/>
+      <ellipse cx="72" cy="32" rx="16" ry="11" fill="#5ba4a4" transform="rotate(20 72 32)" opacity=".7"/>
+      <ellipse cx="35" cy="62" rx="18" ry="12" fill="#e8a4bf" transform="rotate(15 35 62)"/>
+      <ellipse cx="65" cy="62" rx="18" ry="12" fill="#e8a4bf" transform="rotate(-15 65 62)" opacity=".8"/>
+      <circle cx="50" cy="28" r="5" fill="#d4789e"/>
+      <line x1="50" y1="28" x2="50" y2="75" stroke="#d4789e" stroke-width="2"/>
+    </svg>
+    <div class="brand"><h1>Graziély Regina</h1><span>Pilates e Fisioterapia</span></div>
+    <div class="hdate">
+      <div class="lbl">Hoje</div>
+      <div class="val" id="hdateVal"></div>
+      <div class="cnt" id="hdateCnt"></div>
+    </div>
+  </div>
+</header>
+
+<div class="pay-banner" id="payBanner">
+  <div class="pay-banner-title">⚠️ Pagamentos a vencer</div>
+  <div id="payBannerList"></div>
+</div>
+
+<nav>
+  <button class="active" id="btnLista"   onclick="setView('lista')">📋 Aulas</button>
+  <button id="btnAgenda"  onclick="setView('agenda')">📅 Agenda</button>
+  <button id="btnAlunos"  onclick="setView('alunos')">👥 Alunos</button>
+  <button id="btnFaltas"  onclick="setView('faltas')">📌 Faltas</button>
+  <button id="btnPag"     onclick="setView('pag')">💰 Pgto</button>
+  <button id="btnHist"    onclick="setView('hist')">🗂 Histórico</button>
+  <button id="btnEvol"    onclick="setView('evol')">📈 Evolução</button>
+  <button id="btnRelatorio" onclick="setView('relatorio')">📊 Relatório</button>
+</nav>
+
+<!-- ════ LISTA ════ -->
+<div id="viewLista" class="pb">
+  <div class="stats">
+    <div class="stat"><div class="ico">🧘</div><div class="num" id="sHoje">0</div><div class="lbl">Hoje</div></div>
+    <div class="stat"><div class="ico">👥</div><div class="num" id="sAlunos">0</div><div class="lbl">Alunos</div></div>
+    <div class="stat"><div class="ico">📌</div><div class="num" id="sFaltas">0</div><div class="lbl">Faltas</div></div>
+    <div class="stat"><div class="ico">💰</div><div class="num" id="sVenc">0</div><div class="lbl">Vencendo</div></div>
+  </div>
+  <div class="sec-lbl">Próximas Aulas</div>
+  <div id="listaContent"></div>
+</div>
+
+<!-- ════ AGENDA ════ -->
+<div id="viewAgenda" class="pb" style="display:none">
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button onclick="changeMonth(-1)">‹</button>
+      <h3 id="calTitle"></h3>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid">
+      <div class="cal-dow">D</div><div class="cal-dow">S</div><div class="cal-dow">T</div>
+      <div class="cal-dow">Q</div><div class="cal-dow">Q</div><div class="cal-dow">S</div><div class="cal-dow">S</div>
+    </div>
+  </div>
+  <div class="sec-lbl" id="agendaDayLbl"></div>
+  <div id="agendaDayContent"></div>
+</div>
+
+<!-- ════ ALUNOS ════ -->
+<div id="viewAlunos" class="pb" style="display:none">
+  <div class="sec-lbl">Alunos Cadastrados</div>
+  <div id="alunosContent"></div>
+</div>
+
+<!-- ════ FALTAS ════ -->
+<div id="viewFaltas" class="pb" style="display:none">
+  <div class="sec-lbl">Faltas e Reposições</div>
+  <div id="faltasContent"></div>
+</div>
+
+<!-- ════ PAGAMENTOS ════ -->
+<div id="viewPag" class="pb" style="display:none">
+  <div class="sec-lbl">A Receber</div>
+  <div id="pagContent"></div>
+</div>
+
+<div id="viewHist" class="pb" style="display:none">
+  <div class="sec-lbl">Histórico de Pagamentos</div>
+  <div id="histContent"></div>
+</div>
+
+<!-- ════ RELATÓRIO ════ -->
+<div id="viewRelatorio" class="pb" style="display:none">
+  <div class="sec-lbl">Relatório Geral</div>
+  <div id="relatorioContent"></div>
+</div>
+
+<!-- ════ EVOLUÇÃO ════ -->
+<div id="viewEvol" class="pb" style="display:none">
+  <div class="sec-lbl">Evolução dos Alunos</div>
+  <div id="evolContent"></div>
+</div>
+
+<button class="fab" id="fabBtn" onclick="fabAction()">+</button>
+
+<!-- ════════════════════════════════
+     FORM: NOVA AULA AVULSA
+════════════════════════════════ -->
+<div class="overlay" id="formOverlay" style="display:none" onclick="oc(event,'formOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div class="sheet-title" id="formTitle">Nova Aula</div>
+    <button class="close-btn" onclick="closeForm()">✕</button>
+  </div>
+  <div class="sheet-sub" id="formSub">Agendamento avulso</div>
+
+  <label class="field-lbl">Aluno(a)</label>
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <div style="flex:1">
+      <input class="field" id="fAluno" type="text" list="alSug" autocomplete="off" placeholder="Buscar por nome..." oninput="checkNovaPessoa()" onchange="checkNovaPessoa()" style="margin-bottom:4px">
+      <datalist id="alSug"></datalist>
+      <div id="novaPessoaBtn" style="display:none">
+        <button onclick="abrirCadastroRapido()" style="width:100%;padding:9px;background:var(--teal-light);border:1.5px dashed var(--teal);border-radius:10px;color:var(--teal-dark);font-size:.8rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;">👤 + Cadastrar nova pessoa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO PACOTE -->
+  <div id="pacoteInfoBox" style="display:none"></div>
+
+  <div id="sessaoValorWrap" style="display:none;margin-bottom:4px">
+    <label class="field-lbl">Valor da sessão (R$)</label>
+    <input class="field" id="fSessaoValor" type="number" placeholder="0,00" step="0.01">
+    <div id="fSessaoValorSug" style="font-size:.7rem;color:var(--teal);margin-top:-10px;margin-bottom:10px;"></div>
+  </div>
+
+  <div class="row2">
+    <div><label class="field-lbl">Data</label><input class="field" id="fData" type="date"></div>
+    <div>
+      <label class="field-lbl">Modalidade</label>
+      <select class="field" id="fMod" onchange="checkSessaoAvulsa()">
+        <option>Pilates Individual</option><option>Pilates em Dupla</option>
+        <option>Pilates em Grupo</option><option>Fisioterapia</option>
+        <option>Massagem Relaxante</option><option>Massagem Terapêutica</option><option>Avaliação</option>
+      </select>
+    </div>
+  </div>
+  <div class="row2">
+    <div><label class="field-lbl">Início</label><input class="field" id="fStart" type="time" value="08:00"></div>
+    <div><label class="field-lbl">Fim</label><input class="field" id="fEnd" type="time" value="09:00"></div>
+  </div>
+  <div class="toggle-row">
+    <span style="font-size:.84rem">🔄 Aula de reposição?</span>
+    <label class="toggle"><input type="checkbox" id="fRep"><span class="tslider"></span></label>
+  </div>
+  <label class="field-lbl">Observações</label>
+  <textarea class="field" id="fObs" rows="2" placeholder="Foco, observações..."></textarea>
+  <div class="btn-row">
+    <button class="btn-del" id="btnDelAppt" style="display:none" onclick="askDel('appt')">🗑 Remover</button>
+    <button class="btn-sec" id="btnFaltaFromAppt" style="display:none" onclick="openFaltaFromAppt()">📌 Marcar falta</button>
+    <button class="btn-save" onclick="saveAppt()">Salvar Aula</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════
+     FORM: NOVO ALUNO (com horários fixos)
+════════════════════════════════ -->
+<div class="overlay" id="alunoOverlay" style="display:none" onclick="oc(event,'alunoOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div class="sheet-title" id="alunoFormTitle">Novo Aluno</div>
+    <button class="close-btn" onclick="closeAlunoForm()">✕</button>
+  </div>
+  <div class="sheet-sub">Perfil, horários fixos e plano</div>
+
+  <!-- FOTO PERFIL -->
+  <div class="foto-perfil-wrap">
+    <div id="fotoPerfWrap" onclick="document.getElementById('fotoPerfInput').click()">
+      <div class="foto-perfil-placeholder" id="fotoPerfPlaceholder">
+        <span style="font-size:1.6rem">📷</span>
+        <span>Foto</span>
+      </div>
+      <img id="fotoPerfImg" class="foto-perfil-circle" style="display:none">
+    </div>
+    <div class="foto-perfil-lbl" onclick="document.getElementById('fotoPerfInput').click()">Toque para adicionar foto</div>
+    <button id="fotoPerfRemove" onclick="removeFotoPerfil()" style="display:none;margin-top:4px;background:none;border:none;color:var(--gray);font-size:.68rem;cursor:pointer;">✕ Remover foto</button>
+  </div>
+  <input type="file" id="fotoPerfInput" accept="image/*" style="display:none" onchange="handleFotoPerfil(event)">
+
+  <label class="field-lbl">Nome completo</label>
+  <input class="field" id="aNome" type="text" placeholder="Nome">
+  <div class="row2" style="margin-bottom:2px">
+    <div>
+      <label class="field-lbl">📋 Data de matrícula</label>
+      <input class="field" id="aMatricula" type="date">
+      <div style="font-size:.68rem;color:var(--gray);margin-top:-8px;margin-bottom:10px">Data de entrada no estúdio</div>
+    </div>
+    <div>
+      <label class="field-lbl">📱 WhatsApp</label>
+      <input class="field" id="aWhatsapp" type="tel" placeholder="(11) 99999-9999">
+    </div>
+  </div>
+  <div class="row2">
+    <div>
+      <label class="field-lbl">Modalidade</label>
+      <select class="field" id="aMod" onchange="updatePlanoOptions();updatePreco()">
+        <option>Pilates Individual</option><option>Pilates em Dupla</option>
+        <option>Pilates em Grupo</option><option>Fisioterapia</option>
+        <option>Massagem Relaxante</option><option>Massagem Terapêutica</option>
+      </select>
+    </div>
+    <div>
+      <label class="field-lbl">Cor na agenda</label>
+      <div class="color-chips" style="margin-top:8px;">
+        <div class="chip sel" style="background:#d4789e" data-c="pink" onclick="pickColor(this)"></div>
+        <div class="chip" style="background:#5ba4a4" data-c="teal" onclick="pickColor(this)"></div>
+        <div class="chip" style="background:#9b7fd4" data-c="lav" onclick="pickColor(this)"></div>
+      </div>
+    </div>
+  </div>
+
+  <label class="field-lbl">Foco / Objetivo</label>
+  <textarea class="field" id="aFoco" rows="2" placeholder="Ex: fortalecimento de coluna..."></textarea>
+  <label class="field-lbl">Observações clínicas</label>
+  <textarea class="field" id="aObs" rows="2" placeholder="Restrições, cuidados especiais..."></textarea>
+
+
+
+  <!-- SERVIÇOS MÚLTIPLOS -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px;">
+    <div style="font-size:.75rem;font-weight:700;color:var(--teal-dark);">💰 Serviços e planos</div>
+    <div style="font-size:.68rem;color:var(--gray)">Adicione um ou mais serviços</div>
+  </div>
+  <div id="servicosWrap"></div>
+  <button class="btn-add-servico" onclick="addServico()">+ Adicionar serviço</button>
+  <!-- campos hidden para compatibilidade -->
+  <input type="hidden" id="aPagData" value="">
+  <input type="hidden" id="aProxVenc" value="">
+  <input type="hidden" id="aValor" value="0">
+  <input type="hidden" id="aPlano" value="Mensal">
+  <input type="hidden" id="aMod" value="Pilates Individual">
+
+  <div id="jaPagouWrap" style="background:var(--green-light);border:1.5px solid var(--green);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+    <div class="toggle-row" style="margin-bottom:0">
+      <div>
+        <div style="font-size:.82rem;font-weight:600;color:var(--green)">💰 Já pagou na matrícula?</div>
+        <div style="font-size:.68rem;color:#555;margin-top:2px">Registra o pagamento e não aparece na lista até o próximo vencimento</div>
+      </div>
+      <label class="toggle"><input type="checkbox" id="aJaPagou"><span class="tslider"></span></label>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn-del" id="alunoDelBtn" style="display:none" onclick="askDel('aluno')">🗑 Remover</button>
+    <button class="btn-save" onclick="saveAluno()">Salvar Aluno</button>
+  </div>
+</div>
+</div>
+
+<!-- ════════════════════════════════
+     FORM: REGISTRAR FALTA
+════════════════════════════════ -->
+<div class="overlay" id="faltaOverlay" style="display:none" onclick="oc(event,'faltaOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div class="sheet-title">Registrar Falta</div>
+    <button class="close-btn" onclick="closeFaltaForm()">✕</button>
+  </div>
+  <div class="sheet-sub">Selecione o motivo para controlar reposições</div>
+
+  <label class="field-lbl">Aluno(a)</label>
+  <input class="field" id="ffAluno" type="text" list="alSug2" autocomplete="off">
+  <datalist id="alSug2"></datalist>
+
+  <label class="field-lbl">Data da aula que faltou</label>
+  <input class="field" id="ffData" type="date">
+
+  <label class="field-lbl">Motivo da falta</label>
+  <div class="motivo-opts">
+    <button class="motivo-btn" id="mBtnFaltou" onclick="selMotivo('faltou')">
+      ❌ Faltou sem avisar
+    </button>
+    <button class="motivo-btn" id="mBtnAvisou" onclick="selMotivo('avisou')">
+      📞 Avisou com antecedência
+    </button>
+  </div>
+  <div id="motivoWarnBox" class="warn-box" style="display:none">
+    ⚠️ Falta sem aviso — a reposição pode ser negada conforme sua política.
+  </div>
+
+  <label class="field-lbl">Observação (opcional)</label>
+  <input class="field" id="ffObs" type="text" placeholder="Ex: viagem, doença...">
+
+  <button class="btn-save" onclick="saveFalta()">Registrar Falta</button>
+</div>
+</div>
+
+<!-- ════════════════════════════════
+     FORM: AGENDAR REPOSIÇÃO
+════════════════════════════════ -->
+<div class="overlay" id="repOverlay" style="display:none" onclick="oc(event,'repOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div class="sheet-title">Agendar Reposição</div>
+    <button class="close-btn" onclick="closeRepForm()">✕</button>
+  </div>
+  <div class="sheet-sub" id="repSub">Escolha uma data dentro do plano do aluno</div>
+
+  <div id="repInfoBox" class="info-box"></div>
+
+  <label class="field-lbl">Data da reposição</label>
+  <input class="field" id="repData" type="date" oninput="validateRepDate()">
+  <div id="repDateWarn" style="font-size:.72rem;color:var(--red);margin-top:-10px;margin-bottom:10px;display:none">
+    ⚠️ Data fora do período do plano do aluno.
+  </div>
+
+  <div class="row2">
+    <div><label class="field-lbl">Início</label><input class="field" id="repStart" type="time" value="08:00"></div>
+    <div><label class="field-lbl">Fim</label><input class="field" id="repEnd" type="time" value="09:00"></div>
+  </div>
+
+  <label class="field-lbl">Observações</label>
+  <textarea class="field" id="repObs" rows="2" placeholder="Observações da aula de reposição..."></textarea>
+
+  <button class="btn-save" onclick="saveReposicao()">✓ Confirmar Reposição</button>
+</div>
+</div>
+
+<!-- ════════════════════════════════
+     CONFIRM MODAL
+════════════════════════════════ -->
+<div class="confirm-center" id="confirmOverlay" style="display:none">
+  <div class="confirm-box">
+    <h3 id="confirmTitle">Confirmar</h3>
+    <p id="confirmMsg">Esta ação não pode ser desfeita.</p>
+    <div class="confirm-btns">
+      <button class="btn-cancel2" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn-ok2" id="confirmOkBtn" onclick="doConfirm()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════
+     HIST PAGAMENTOS
+════════════════════════════════ -->
+<div class="overlay" id="histPagOverlay" style="display:none" onclick="oc(event,'histPagOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div class="sheet-title" id="histPagTitle">Histórico de Pagamentos</div>
+    <button class="close-btn" onclick="document.getElementById('histPagOverlay').style.display='none'">✕</button>
+    <!-- back to hist -->
+  </div>
+  <div class="sheet-sub" id="histPagSub"></div>
+  <div id="histPagContent"></div>
+</div>
+</div>
+
+
+<!-- ════ EVOLUÇÃO DETALHE ════ -->
+<div class="overlay" id="evolDetalheOverlay" style="display:none" onclick="oc(event,'evolDetalheOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div>
+      <div class="sheet-title" id="evolDetalheName"></div>
+      <div class="sheet-sub" id="evolDetalheMod" style="margin-bottom:0"></div>
+    </div>
+    <button class="close-btn" onclick="document.getElementById('evolDetalheOverlay').style.display='none'">✕</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="evolModTabs"></div>
+  <button onclick="openEvolForm()" style="width:100%;padding:11px;background:linear-gradient(135deg,var(--teal),var(--teal-dark));border:none;border-radius:12px;color:white;font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;margin-bottom:16px;">+ Nova Anotação de Evolução</button>
+  <div id="evolDetalheContent"></div>
+</div>
+</div>
+
+<!-- ════ EVOLUÇÃO FORM ════ -->
+<div class="overlay" id="evolFormOverlay" style="display:none" onclick="oc(event,'evolFormOverlay')">
+<div class="sheet">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+    <div class="sheet-title">Nova Anotação</div>
+    <button class="close-btn" onclick="closeEvolForm()">✕</button>
+  </div>
+  <div class="sheet-sub" id="evolFormSub"></div>
+
+  <div class="row2">
+    <div>
+      <label class="field-lbl">Data</label>
+      <input class="field" id="efData" type="date">
+    </div>
+    <div>
+      <label class="field-lbl">Modalidade</label>
+      <select class="field" id="efMod">
+        <option value="Pilates">Pilates</option>
+        <option value="Fisioterapia">Fisioterapia</option>
+        <option value="Massagem">Massagem</option>
+      </select>
+    </div>
+  </div>
+
+  <label class="field-lbl">Nível de dor / desconforto</label>
+  <div style="margin-bottom:4px;font-size:.7rem;color:var(--gray)">0 = sem dor &nbsp;·&nbsp; 10 = dor intensa</div>
+  <div class="dor-bar" id="dorBar"></div>
+  <div style="margin-bottom:14px"></div>
+
+  <label class="field-lbl">Exercícios realizados</label>
+  <textarea class="field" id="efExercicios" rows="2" placeholder="Ex: alongamento, fortalecimento de core, ponte..."></textarea>
+
+  <label class="field-lbl">Observações gerais</label>
+  <textarea class="field" id="efObs" rows="3" placeholder="Como o aluno se saiu, progressos, limitações, próximos objetivos..."></textarea>
+
+  <label class="field-lbl">Fotos de evolução</label>
+  <div class="foto-preview" id="fotoPreview">
+    <div class="foto-input-btn" onclick="document.getElementById('fotoInput').click()">
+      <span style="font-size:1.2rem">📷</span>
+      <span>Adicionar</span>
+    </div>
+  </div>
+  <input type="file" id="fotoInput" accept="image/*" multiple style="display:none" onchange="handleFotos(event)">
+
+  <button class="btn-save" style="margin-top:16px" onclick="saveEvolEntry()">Salvar Anotação</button>
+</div>
+</div>
+
+<!-- ════ FOTO FULLSCREEN ════ -->
+<div id="fotoFullscreen" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;flex-direction:column;" onclick="this.style.display='none'">
+  <img id="fotoFullImg" style="max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain;">
+  <div style="color:rgba(255,255,255,.5);font-size:.75rem;margin-top:12px">Toque para fechar</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   CONSTANTS & HELPERS
+═══════════════════════════════════════ */
+const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DOWNAMES=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const AVC=['#d4789e','#5ba4a4','#9b7fd4','#e8973a','#2da88a','#7a7acd','#c97a3a','#a04b9f'];
+const CM={pink:{bg:'#fce8f3',border:'#d4789e'},teal:{bg:'#e0f5f5',border:'#5ba4a4'},lav:{bg:'#ede8fc',border:'#9b7fd4'}};
+// Days until next billing/expiry — Mensal=monthly, others paid upfront so venc = full duration
+const PLANO_DIAS={Mensal:30,Semestral:180,Anual:365,'5 Sessões':60,'10 Sessões':60,Avulso:30};
+
+function tds(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return`${y}-${m}-${dd}`;}
+function dtLocal(s){return new Date(s+'T00:00:00');}
+function addDays(ds,n){const d=dtLocal(ds);d.setDate(d.getDate()+n);return tds(d);}
+function diffDays(a,b){return Math.round((dtLocal(a)-dtLocal(b))/(864e5));}
+function ini(n){return n.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+
+const today=new Date();
+const todayStr=tds(today);
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let appts    = JSON.parse(localStorage.getItem('gz4_appts')   ||'null');
+let alunos   = JSON.parse(localStorage.getItem('gz4_alunos')  ||'null');
+let faltas   = JSON.parse(localStorage.getItem('gz4_faltas')  ||'null');
+let histPag     = JSON.parse(localStorage.getItem('gz4_histpag') ||'[]');
+let sessoesPend = JSON.parse(localStorage.getItem('gz4_sessoes')  ||'[]');
+
+// seed demo data
+if(!alunos){
+  // demo: one vencendo amanhã, one já vencido, one em dia
+  const p1=addDays(todayStr,-29);  // vence amanhã
+  const p2=addDays(todayStr,-33);  // venceu há 3 dias
+  const p3=addDays(todayStr,-5);   // em dia (25 dias restantes)
+  alunos=[
+    {id:'a1',nome:'Ana Paula',modalidade:'Pilates Individual',foco:'Fortalecimento de coluna',obs:'Hérnia L4-L5',
+     color:'pink',plano:'Mensal',pagData:p1,proxVenc:addDays(p1,30),valor:310,
+     whatsapp:'11999990001',matricula:addDays(todayStr,-365),
+     horarios:[{dow:1,start:'08:00',end:'09:00'},{dow:3,start:'08:00',end:'09:00'}],
+     servicos:[{id:'s1',modalidade:'Pilates Individual',plano:'Mensal',pagData:p1,proxVenc:addDays(p1,30),valor:310,horarios:[{dow:1,start:'08:00',end:'09:00'},{dow:3,start:'08:00',end:'09:00'}]}]},
+    {id:'a2',nome:'Camila Torres',modalidade:'Pilates em Dupla',foco:'Condicionamento geral',obs:'',
+     color:'teal',plano:'Mensal',pagData:p2,proxVenc:addDays(p2,30),valor:250,
+     whatsapp:'11999990002',matricula:addDays(todayStr,-180),
+     horarios:[{dow:5,start:'09:00',end:'10:00'}],
+     servicos:[{id:'s2',modalidade:'Pilates em Dupla',plano:'Mensal',pagData:p2,proxVenc:addDays(p2,30),valor:250,horarios:[{dow:5,start:'09:00',end:'10:00'}]}]},
+    {id:'a3',nome:'Fernanda Lima',modalidade:'Fisioterapia',foco:'Reabilitação joelho',obs:'Evitar impacto',
+     color:'lav',plano:'5 Sessões',pagData:p3,proxVenc:addDays(p3,60),valor:400,
+     whatsapp:'',matricula:addDays(todayStr,-90),
+     horarios:[],
+     servicos:[{id:'s3',modalidade:'Fisioterapia',plano:'5 Sessões',pagData:p3,proxVenc:addDays(p3,60),valor:400,horarios:[]}]},
+  ];
+}
+
+if(!appts){
+  appts=[];
+  alunos.forEach(a=>generateRecurring(a,false));
+}
+
+if(!faltas){
+  faltas=[
+    {id:'f1',aluno:'Camila Torres',alunoId:'a2',data:addDays(todayStr,-7),motivo:'avisou',obs:'Viagem',reposta:false,repApptId:null},
+  ];
+}
+
+let _persistTimer=null;
+function persist(){
+  // debounced — saves 500ms after last change, shows indicator
+  clearTimeout(_persistTimer);
+  _persistTimer=setTimeout(()=>{
+    localStorage.setItem('gz4_appts',JSON.stringify(appts));
+    localStorage.setItem('gz4_alunos',JSON.stringify(alunos));
+    localStorage.setItem('gz4_faltas',JSON.stringify(faltas));
+    localStorage.setItem('gz4_histpag',JSON.stringify(histPag));
+    localStorage.setItem('gz4_sessoes',JSON.stringify(sessoesPend));
+    showSaveIndicator();
+  },500);
+}
+
+function showSaveIndicator(){
+  let el=document.getElementById('saveIndicator');
+  if(!el){
+    el=document.createElement('div');
+    el.id='saveIndicator';
+    el.style.cssText='position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:rgba(45,168,138,.92);color:white;padding:6px 16px;border-radius:20px;font-size:.72rem;font-weight:600;font-family:DM Sans,sans-serif;z-index:9999;pointer-events:none;transition:opacity .4s;';
+    document.body.appendChild(el);
+  }
+  el.textContent='✓ Salvo automaticamente';
+  el.style.opacity='1';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.style.opacity='0',2000);
+}
+
+/* ═══════════════════════════════════════
+   RECURRING GENERATION
+   Generates fixed-schedule appointments
+   for an aluno up to their plan end date
+═══════════════════════════════════════ */
+function generateRecurring(aluno, doPersist=true){
+  if(!aluno.horarios||!aluno.horarios.length) return;
+  // remove existing future recurring appts for this aluno
+  appts=appts.filter(a=>!(a.alunoId===aluno.id && a.fixo && a.date>=todayStr));
+
+  const startDs=aluno.pagData||todayStr;
+  // use proxVenc as end if available, otherwise calculate
+  const endDs=aluno.proxVenc||addDays(startDs, PLANO_DIAS[aluno.plano]||30);
+
+  let cur=dtLocal(startDs);
+  const endD=dtLocal(endDs);
+
+  while(cur<=endD){
+    const dow=cur.getDay();
+    const slot=aluno.horarios.find(h=>h.dow===dow);
+    if(slot){
+      const ds=tds(cur);
+      // don't duplicate
+      if(!appts.find(a=>a.alunoId===aluno.id&&a.date===ds&&a.start===slot.start&&a.fixo&&!a.rep)){
+        appts.push({
+          id:uid(),
+          alunoId:aluno.id,
+          aluno:aluno.nome,
+          date:ds,
+          start:slot.start,
+          end:slot.end,
+          modalidade:aluno.modalidade,
+          obs:'',
+          color:aluno.color||'pink',
+          fixo:true,
+          rep:false,
+          faltaId:null
+        });
+      }
+    }
+    cur.setDate(cur.getDate()+1);
+  }
+  if(doPersist) persist();
+}
+
+/* ═══════════════════════════════════════
+   BANNER & HEADER
+═══════════════════════════════════════ */
+
+function getFreqLabel(horarios){
+  if(!horarios||!horarios.length) return '';
+  const n=horarios.length;
+  return n>=3?'3x/semana':n===2?'2x/semana':'1x/semana';
+}
+
+function getPlanoLabel(aluno){
+  const freq=getFreqLabel(aluno.horarios);
+  if(!aluno.plano) return '';
+  const isPilates=(aluno.modalidade||'').startsWith('Pilates');
+  if(isPilates && freq) return aluno.plano+' · '+freq;
+  return aluno.plano;
+}
+
+function getValorCorreto(aluno, srv){
+  // If a specific service is passed, use it; otherwise use aluno primary
+  const s=srv||aluno;
+  const mod=s.modalidade||aluno.modalidade||'';
+  const plano=s.plano||aluno.plano||'Avulso';
+  const horarios=s.horarios||aluno.horarios||[];
+  const isPilates=mod.startsWith('Pilates');
+  const isFisio=mod==='Fisioterapia';
+  const isMassa=mod.startsWith('Massagem');
+  if(isPilates && PILATES_PRECOS[plano]){
+    const n=horarios.length;
+    const freq=n>=3?'3x':n===2?'2x':'1x';
+    const mensal=PILATES_PRECOS[plano][freq];
+    const meses=MESES_PLANO[plano]||1;
+    return mensal*meses;
+  }
+  if(isFisio && FISIO_PRECOS[plano]!=null) return FISIO_PRECOS[plano];
+  if(isMassa && MASSA_PRECOS[mod]) return MASSA_PRECOS[mod];
+  return s.valor||aluno.valor||0;
+}
+function renderHeader(){
+  document.getElementById('hdateVal').textContent=today.toLocaleDateString('pt-BR',{day:'numeric',month:'short'});
+  const c=appts.filter(a=>a.date===todayStr).length;
+  document.getElementById('hdateCnt').textContent=c+' aula'+(c!==1?'s':'');
+}
+
+function renderPayBanner(){
+  const bn=document.getElementById('payBanner');
+  const list=document.getElementById('payBannerList');
+  const alerts=alunos.filter(a=>{
+    if(a.plano==='Avulso') return false;
+    return diffDays(a.proxVenc,todayStr)<=7;
+  });
+  if(!alerts.length){bn.classList.remove('visible');return;}
+  bn.classList.add('visible');
+  list.innerHTML=alerts.map(a=>{
+    const d=diffDays(a.proxVenc,todayStr);
+    const lbl=d<0?'VENCIDO':d===0?'HOJE':'em '+d+'d';
+    return`<div class="pbi">
+      <div><div class="pname">${a.nome}</div><div class="pdue">${a.plano} · vence ${dtLocal(a.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}</div></div>
+      <span class="badge ${d<0?'badge-ov':'badge-soon'}">${lbl}</span></div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   STATS
+═══════════════════════════════════════ */
+function renderStats(){
+  document.getElementById('sHoje').textContent=appts.filter(a=>a.date===todayStr).length;
+  document.getElementById('sAlunos').textContent=alunos.length;
+  document.getElementById('sFaltas').textContent=faltas.filter(f=>!f.reposta).length;
+  document.getElementById('sVenc').textContent=alunos.filter(a=>{
+    if(a.plano==='Avulso') return false;
+    return diffDays(a.proxVenc,todayStr)<=7;
+  }).length;
+}
+
+/* ═══════════════════════════════════════
+   LISTA
+═══════════════════════════════════════ */
+function renderLista(){
+  const el=document.getElementById('listaContent');
+  const sorted=[...appts].filter(a=>a.date>=todayStr)
+    .sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
+  if(!sorted.length){el.innerHTML='<div class="empty">Nenhuma aula agendada<br><button onclick="openForm()">+ Nova Aula</button></div>';return;}
+  let html='',lastDate='';
+  sorted.forEach(a=>{
+    if(a.date!==lastDate){
+      const isT=a.date===todayStr;
+      const d=dtLocal(a.date);
+      html+=`<div class="date-group">${isT?'<span class="today-badge">HOJE</span>':''} ${d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})}</div>`;
+      lastDate=a.date;
+    }
+    html+=apptCardHtml(a);
+  });
+  el.innerHTML=html;
+}
+
+function apptCardHtml(a){
+  const al=alunos.find(x=>x.id===a.alunoId)||{};
+  const idx=alunos.indexOf(al); const ac=AVC[idx>=0?idx%AVC.length:0];
+  const c=CM[a.color]||CM.pink;
+  const falta=faltas.find(f=>f.repApptId===a.id);
+  let tags='';
+  if(a.fixo) tags+=`<span class="tag tag-fixo">📅 Fixo</span>`;
+  if(a.rep)  tags+=`<span class="tag tag-rep">🔄 Reposição</span>`;
+  const faltaObj=faltas.find(f=>f.data===a.date&&f.alunoId===a.alunoId&&!f.reposta);
+  if(faltaObj) tags+=`<span class="tag tag-faltou">❌ Faltou</span>`;
+  return`<div class="appt-card ${faltaObj?'absent':''}" style="border-left:4px solid ${c.border}" onclick="openEdit('${a.id}')">
+    <div class="avatar" style="background:${ac}">${ini(a.aluno)}</div>
+    <div class="appt-info">
+      <div class="appt-name">${a.aluno}</div>
+      <div class="appt-sub">${a.modalidade} · ${a.start}–${a.end}</div>
+      ${tags?`<div class="appt-tags">${tags}</div>`:''}
+      ${a.obs?`<div style="font-size:.66rem;color:#aaa;font-style:italic;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.obs}</div>`:''}
+    </div>
+    <div class="arr">›</div></div>`;
+}
+
+/* ═══════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════ */
+let selDate=todayStr, calDate=new Date();
+
+function renderCalendar(){
+  document.getElementById('calTitle').textContent=`${MONTHS[calDate.getMonth()]} ${calDate.getFullYear()}`;
+  const grid=document.getElementById('calGrid');
+  while(grid.children.length>7) grid.removeChild(grid.lastChild);
+  const first=new Date(calDate.getFullYear(),calDate.getMonth(),1);
+  const last=new Date(calDate.getFullYear(),calDate.getMonth()+1,0);
+  for(let i=0;i<first.getDay();i++) grid.appendChild(document.createElement('div'));
+  for(let n=1;n<=last.getDate();n++){
+    const d=new Date(calDate.getFullYear(),calDate.getMonth(),n), ds=tds(d);
+    const isT=ds===todayStr, isSel=ds===selDate, has=appts.some(a=>a.date===ds);
+    const el=document.createElement('div');
+    el.className='cal-day'+(isT?' today':'')+(isSel?' selected':'');
+    el.textContent=n;
+    if(has){const dot=document.createElement('div');dot.className='dot';el.appendChild(dot);}
+    el.onclick=()=>{selDate=ds;renderCalendar();renderAgendaDay();};
+    grid.appendChild(el);
+  }
+}
+function changeMonth(d){calDate.setMonth(calDate.getMonth()+d);renderCalendar();}
+
+function renderAgendaDay(){
+  const d=dtLocal(selDate);
+  document.getElementById('agendaDayLbl').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const el=document.getElementById('agendaDayContent');
+  const dayA=appts.filter(a=>a.date===selDate).sort((a,b)=>a.start.localeCompare(b.start));
+  if(!dayA.length){el.innerHTML=`<div class="empty">Sem aulas neste dia<br><button onclick="openForm('${selDate}')">+ Agendar aqui</button></div>`;return;}
+  el.innerHTML=dayA.map(a=>{
+    const al=alunos.find(x=>x.id===a.alunoId)||{};
+    const idx=alunos.indexOf(al); const ac=AVC[idx>=0?idx%AVC.length:0];
+    const c=CM[a.color]||CM.pink;
+    let tags='';
+    if(a.fixo) tags+=`<span class="tag tag-fixo">📅 Fixo</span>`;
+    if(a.rep)  tags+=`<span class="tag tag-rep">🔄 Reposição</span>`;
+    const fo=faltas.find(f=>f.data===a.date&&f.alunoId===a.alunoId&&!f.reposta);
+    if(fo) tags+=`<span class="tag tag-faltou">❌ Faltou</span>`;
+    return`<div class="appt-card" style="border-left:4px solid ${c.border}" onclick="openEdit('${a.id}')">
+      <div style="text-align:center;min-width:40px">
+        <div style="font-size:.85rem;font-weight:700;color:var(--teal-dark)">${a.start}</div>
+        <div style="font-size:.6rem;color:#aaa">até</div>
+        <div style="font-size:.75rem;color:#aaa">${a.end}</div>
+      </div>
+      <div class="appt-info"><div class="appt-name">${a.aluno}</div><div class="appt-sub">${a.modalidade}</div>${tags?`<div class="appt-tags">${tags}</div>`:''}</div>
+      <div class="arr">›</div></div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   ALUNOS
+═══════════════════════════════════════ */
+function renderAlunos(){
+  const el=document.getElementById('alunosContent');
+  if(!alunos.length){el.innerHTML='<div class="empty">Nenhum aluno cadastrado<br><button onclick="openAlunoForm()">+ Novo Aluno</button></div>';return;}
+  el.innerHTML=alunos.map(a=>{
+    const idx=alunos.indexOf(a), ac=AVC[idx%AVC.length];
+    let vc='ok',vl='✓ Em dia';
+    if(a.plano!=='Avulso'){
+      const d=diffDays(a.proxVenc,todayStr);
+      if(d<0){vc='over';vl=`⚠ Vencido ${Math.abs(d)}d`;}
+      else if(d<=7){vc='warn';vl=`⚠ Vence em ${d}d`;}
+      else vl=`✓ ${dtLocal(a.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'short'})}`;
+    } else vl='Avulso';
+    const diasStr=a.horarios&&a.horarios.length
+      ? a.horarios.map(h=>DOWNAMES[h.dow]).join(' · ')
+      : 'Sem dias fixos';
+    // pacote progress pill for fisio/massagem packages
+    let pacotePill='';
+    if((a.plano==='5 Sessões'||a.plano==='10 Sessões') && a.modalidade==='Fisioterapia'){
+      const total={'5 Sessões':5,'10 Sessões':10}[a.plano];
+      const feitas=appts.filter(x=>x.alunoId===a.id&&x.modalidade==='Fisioterapia').length;
+      const rest=Math.max(0,total-feitas);
+      const cor=rest===0?'#e05555':rest<=2?'#f59e0b':'#2da88a';
+      pacotePill=`<span class="pill" style="background:${cor}20;color:${cor};border:1px solid ${cor}40">🏥 ${feitas}/${total} sessões</span>`;
+    }
+    // build service pills
+    const srvs=a.servicos&&a.servicos.length?a.servicos:[{modalidade:a.modalidade,plano:a.plano}];
+    const matPill=a.matricula?`<span class="pill" style="background:#f0f4ff;color:#5566aa;border:1px solid #c5cef0">📋 Desde ${dtLocal(a.matricula).toLocaleDateString('pt-BR',{month:'short',year:'numeric'})}</span>`:'';
+    const srvPills=srvs.map(s=>{
+      const cat=modCat(s.modalidade);
+      const cls=cat==='pilates'?'servico-pilates':cat==='fisio'?'servico-fisio':'servico-massa';
+      const ico=cat==='pilates'?'🧘':cat==='fisio'?'🏥':'💆';
+      return `<span class="pill servico-tag ${cls}">${ico} ${s.modalidade} · ${s.plano}</span>`;
+    }).join('');
+    return`<div class="aluno-card" onclick="openAlunoEdit('${a.id}')">
+      <div class="aluno-top">
+        ${avatarHtml(a,44,'.82rem')}
+        <div style="flex:1"><div class="aluno-name">${a.nome}</div><div class="aluno-mod" style="font-size:.7rem">${srvs.map(s=>s.modalidade).join(' · ')}</div></div>
+        <div class="arr">›</div>
+      </div>
+      <div class="aluno-footer">
+        ${srvPills}
+        ${matPill}
+        <span class="pill pill-venc ${vc}">${vl}</span>
+        ${pacotePill}
+        ${a.foco?`<span class="pill pill-foco">🎯 ${a.foco.slice(0,28)}${a.foco.length>28?'...':''}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   FALTAS
+═══════════════════════════════════════ */
+function renderFaltas(){
+  const el=document.getElementById('faltasContent');
+  if(!faltas.length){el.innerHTML='<div class="empty">Nenhuma falta registrada 👏</div>';return;}
+  const sorted=[...faltas].sort((a,b)=>b.data.localeCompare(a.data));
+  el.innerHTML=sorted.map(f=>{
+    const d=dtLocal(f.data);
+    const mTag=f.motivo==='avisou'
+      ? '<span class="tag tag-avisou">📞 Avisou</span>'
+      : '<span class="tag tag-faltou">❌ Sem aviso</span>';
+    const statusTag=f.reposta
+      ? '<span class="tag tag-rep">✅ Reposta</span>'
+      : '<span class="tag" style="background:#fff3cd;color:#856404">⏳ Pendente</span>';
+    const actions=!f.reposta
+      ? `<div class="falta-actions">
+           <button class="btn-agendar-rep" onclick="openRepForm('${f.id}')">🔄 Agendar Reposição</button>
+         </div>`
+      : '';
+    return`<div class="falta-card">
+      <div class="falta-top">
+        <div style="font-size:1.6rem">${f.reposta?'✅':'📌'}</div>
+        <div class="falta-info">
+          <div class="falta-name">${f.aluno}</div>
+          <div class="falta-date">${d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'})}</div>
+          <div class="appt-tags" style="margin-top:4px">${mTag}${statusTag}${f.obs?` <span style="font-size:.66rem;color:#aaa;font-style:italic">${f.obs}</span>`:''}</div>
+        </div>
+      </div>
+      ${actions}
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   PAGAMENTOS
+═══════════════════════════════════════ */
+function modCategoria(mod){
+  if(!mod) return 'outro';
+  if(mod.startsWith('Pilates')) return 'pilates';
+  if(mod==='Fisioterapia') return 'fisio';
+  if(mod.startsWith('Massagem')) return 'massa';
+  return 'outro';
+}
+
+function payCardHtml(a, ac){
+  const cat=modCategoria(a.modalidade);
+  const d=a.proxVenc?diffDays(a.proxVenc,todayStr):999;
+  const vs=a.proxVenc?dtLocal(a.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}):'—';
+  const ps=a.pagData?dtLocal(a.pagData).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'}):'—';
+  const warn=d<0?'color:var(--red)':d<=7?'color:var(--warn)':'';
+  const vencBadge=d<=7?`<span class="badge ${d<0?'badge-ov':'badge-soon'}">${d<0?'VENCIDO':'em '+d+'d'}</span>`:'';
+  const valor=getValorCorreto(a);
+  const isAvulso=(a.plano==='Avulso');
+  const valorLabel=isAvulso?'por sessão':a.plano==='Mensal'?'por mês':'total à vista';
+  const sessionCount=appts.filter(x=>x.alunoId===a.id&&x.date<=todayStr).length;
+
+  return `<div class="pay-card">
+    <div class="pay-top" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+      ${avatarHtml(a,36,'.68rem')}
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.88rem">${a.nome} ${vencBadge}</div>
+        <div style="font-size:.72rem;color:var(--gray)">${getPlanoLabel(a)} · R$ ${valor.toFixed(2)} <span style="color:#bbb">${valorLabel}</span></div>
+      </div>
+      <div class="arr">›</div>
+    </div>
+    <div class="pay-body">
+      <div class="pay-row"><span class="k">Modalidade</span><span class="v">${a.modalidade}</span></div>
+      ${isAvulso
+        ? `<div class="pay-row"><span class="k">Sessões realizadas</span><span class="v">${sessionCount}</span></div>
+           <div class="pay-row"><span class="k">Valor por sessão</span><span class="v">R$ ${valor.toFixed(2)}</span></div>`
+        : `<div class="pay-row"><span class="k">Início do plano</span><span class="v">${ps}</span></div>
+           <div class="pay-row"><span class="k">Próximo vencimento</span><span class="v" style="${warn}">${vs}</span></div>
+           <div class="pay-row"><span class="k">Valor (${valorLabel})</span><span class="v">R$ ${valor.toFixed(2)}</span></div>`
+      }
+      <div style="display:flex;gap:8px;margin-top:10px">
+        ${!isAvulso?`<button class="btn-pago" style="flex:1" onclick="registrarPag('${a.id}')">✓ Registrar Pagamento</button>`:''}
+        ${a.whatsapp?`<button onclick="whatsappAviso('${a.id}')" style="flex-shrink:0;padding:10px 14px;background:#25d366;border:none;border-radius:10px;color:white;font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;">📲 Avisar</button>`
+        :`<button onclick="openAlunoEdit('${a.id}')" style="flex-shrink:0;padding:10px 14px;background:#f0f0f0;border:none;border-radius:10px;color:#888;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;">+ Whats</button>`}
+      </div>
+
+    </div>
+  </div>`;
+}
+
+function renderPag(){
+  const el=document.getElementById('pagContent');
+  if(!alunos.length){el.innerHTML='<div class="empty">Nenhum aluno cadastrado</div>';return;}
+
+  // Only show alunos whose payment is due within 5 days OR overdue
+  // For Avulso: always hidden (no fixed billing date)
+  const DIAS_AVISO=5;
+  const aPagar=alunos.filter(a=>{
+    if(a.plano==='Avulso') return false;
+    if(!a.proxVenc) return false;
+    return diffDays(a.proxVenc,todayStr)<=DIAS_AVISO;
+  }).sort((a,b)=>a.proxVenc.localeCompare(b.proxVenc));
+
+  // check pendentes too before early return
+  const _pendCheck=sessoesPend.filter(s=>!s.pago);
+  if(!aPagar.length && !_pendCheck.length){
+    el.innerHTML=`<div class="empty" style="padding:48px 20px">
+      <div style="font-size:2rem;margin-bottom:12px">✅</div>
+      <div style="font-weight:600;color:var(--teal-dark);margin-bottom:6px">Tudo em dia!</div>
+      <div style="font-size:.8rem">Nenhum pagamento pendente.</div>
+    </div>`;
+    return;
+  }
+
+  // Group by category
+  const pilates=aPagar.filter(a=>modCategoria(a.modalidade)==='pilates');
+  const fisio=aPagar.filter(a=>modCategoria(a.modalidade)==='fisio');
+  const massa=aPagar.filter(a=>modCategoria(a.modalidade)==='massa');
+  const outros=aPagar.filter(a=>modCategoria(a.modalidade)==='outro');
+
+  let html=`<div class="info-box" style="margin:0 16px 14px">
+    ⏰ Mostrando pagamentos vencidos ou que vencem nos próximos <b>${DIAS_AVISO} dias</b>.
+    Após marcar como pago, o aluno sai desta lista.
+  </div>`;
+
+  function secHtml(list, emoji, label, cor){
+    if(!list.length) return '';
+    let h=`<div style="display:flex;align-items:center;gap:8px;margin:10px 16px 8px">
+      <div style="width:4px;height:20px;background:${cor};border-radius:2px"></div>
+      <span style="font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:${cor};font-weight:600">${emoji} ${label}</span>
+    </div>`;
+    list.forEach(a=>{
+      const idx=alunos.indexOf(a), ac=AVC[idx%AVC.length];
+      const d=diffDays(a.proxVenc,todayStr);
+      const vs=dtLocal(a.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+      const warn=d<0?'color:var(--red)':d<=2?'color:var(--warn)':'';
+      const vencBadge=d<0
+        ? `<span class="badge badge-ov">VENCIDO ${Math.abs(d)}d</span>`
+        : d===0
+          ? '<span class="badge badge-ov">HOJE</span>'
+          : `<span class="badge badge-soon">em ${d}d</span>`;
+      const valor=getValorCorreto(a);
+      const valorLabel=a.plano==='Mensal'?'por mês':'total à vista';
+      h+=`<div class="pay-card" style="border-left:4px solid ${cor}">
+        <div class="pay-top" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          ${avatarHtml(a,38,'.72rem')}
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:.9rem">${a.nome} ${vencBadge}</div>
+            <div style="font-size:.72rem;color:var(--gray);margin-top:2px">${getPlanoLabel(a)}</div>
+          </div>
+          <div class="arr">›</div>
+        </div>
+        <div class="pay-body">
+          <div class="pay-row"><span class="k">Vencimento</span><span class="v" style="${warn}">${vs}</span></div>
+          <div class="pay-row"><span class="k">Valor (${valorLabel})</span><span class="v" style="color:var(--teal-dark);font-size:1rem">R$ ${valor.toFixed(2)}</span></div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn-pago" style="flex:1" onclick="registrarPag('${a.id}')">✓ Pago! Registrar</button>
+            ${a.whatsapp?`<button onclick="whatsappAviso('${a.id}')" style="flex-shrink:0;padding:10px 14px;background:#25d366;border:none;border-radius:10px;color:white;font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600;">📲 Avisar</button>`
+            :`<button onclick="openAlunoEdit('${a.id}')" style="flex-shrink:0;padding:10px 12px;background:#f0f0f0;border:none;border-radius:10px;color:#888;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;">+ Whats</button>`}
+          </div>
+        </div>
+      </div>`;
+    });
+    return h;
+  }
+
+  html+=secHtml(pilates,'🧘','Pilates','var(--pink-dark)');
+  html+=secHtml(fisio,'🏥','Fisioterapia','var(--teal-dark)');
+  html+=secHtml(massa,'💆','Massagem','var(--lav)');
+  html+=secHtml(outros,'📋','Outros','var(--gray)');
+
+  // ── Sessões avulsas pendentes ──
+  const pendentes=sessoesPend.filter(s=>!s.pago).sort((a,b)=>a.data.localeCompare(b.data));
+  if(pendentes.length){
+    html+=`<div style="display:flex;align-items:center;gap:8px;margin:18px 16px 10px">
+      <div style="width:4px;height:20px;background:#f59e0b;border-radius:2px"></div>
+      <span style="font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:#b45309;font-weight:600">📋 Sessões Avulsas Pendentes</span>
+    </div>`;
+    pendentes.forEach(s=>{
+      const a=alunos.find(x=>x.id===s.alunoId);
+      const ac=a?AVC[alunos.indexOf(a)%AVC.length]:'#aaa';
+      const dData=dtLocal(s.data);
+      const dataStr=dData.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'long'});
+      const hoje=s.data===todayStr;
+      const passado=s.data<todayStr;
+      const badge=passado?'<span class="badge badge-ov">Realizada</span>':hoje?'<span class="badge badge-soon">Hoje</span>':'';
+      const icoMod=s.modalidade.startsWith('Massagem')?'💆':'🏥';
+      html+=`<div class="pay-card" style="border-left:4px solid #f59e0b">
+        <div class="pay-top" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          ${a?avatarHtml(a,38,'.72rem'):`<div class="avatar" style="background:${ac};width:38px;height:38px;font-size:.72rem">${ini(s.aluno)}</div>`}
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:.9rem">${s.aluno} ${badge}</div>
+            <div style="font-size:.72rem;color:var(--gray)">${icoMod} ${s.modalidade} · ${dataStr}</div>
+          </div>
+          <div style="font-weight:700;color:#b45309;font-size:.9rem">R$ ${Number(s.valor).toFixed(2)}</div>
+        </div>
+        <div class="pay-body">
+          <div class="pay-row"><span class="k">Sessão</span><span class="v">${s.modalidade}</span></div>
+          <div class="pay-row"><span class="k">Data</span><span class="v">${dataStr}</span></div>
+          <div class="pay-row"><span class="k">Valor</span>
+            <span class="v" style="display:flex;align-items:center;gap:8px">
+              R$ ${Number(s.valor).toFixed(2)}
+              <button onclick="editarValorSessao('${s.id}')" style="background:none;border:1px solid #ddd;border-radius:6px;padding:2px 8px;font-size:.68rem;cursor:pointer;color:var(--gray)">✏️ Editar</button>
+            </span>
+          </div>
+          <button class="btn-pago" onclick="pagarSessao('${s.id}')">✓ Pago! Registrar e remover da lista</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  if(!aPagar.length && !pendentes.length){
+    el.innerHTML=`<div class="empty" style="padding:48px 20px">
+      <div style="font-size:2rem;margin-bottom:12px">✅</div>
+      <div style="font-weight:600;color:var(--teal-dark);margin-bottom:6px">Tudo em dia!</div>
+      <div style="font-size:.8rem">Nenhum pagamento pendente.</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML=html;
+}
+
+
+function registrarPagHistorico(a){
+  const dias=PLANO_DIAS[a.plano]||30;
+  const validoDe=a.pagData||todayStr;
+  const validoAte=addDays(validoDe, dias);
+  histPag.push({
+    id:uid(),
+    alunoId:a.id,
+    aluno:a.nome,
+    data:a.pagData||todayStr,
+    plano:a.plano,
+    valor:a.valor||0,
+    validoDe,
+    validoAte
+  });
+}
+
+
+function whatsappAviso(alunoId){
+  const a=alunos.find(x=>x.id===alunoId); if(!a) return;
+  const tel=(a.whatsapp||'').replace(/\D/g,'');
+  if(!tel){showToast('⚠️ Cadastre o WhatsApp do aluno primeiro'); return;}
+  const dias=diffDays(a.proxVenc,todayStr);
+  const vencStr=dtLocal(a.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'long'});
+  const valor=getValorCorreto(a);
+  const nome=a.nome.split(' ')[0];
+  const planoMod='plano '+a.plano+' de '+a.modalidade;
+  let msg;
+  if(dias<0){
+    const nd=Math.abs(dias);
+    msg='Olá, '+nome+'! 😊\n\nSeu '+planoMod+' venceu há '+nd+' dia'+(nd>1?'s':'')+', no dia '+vencStr+'.\n\nValor para renovação: R$ '+valor.toFixed(2)+'.\n\nBeijos, Graziély 🌸';
+  } else if(dias===0){
+    msg='Olá, '+nome+'! 😊\n\nSeu '+planoMod+' vence *hoje*!\n\nValor para renovação: R$ '+valor.toFixed(2)+'.\n\nBeijos, Graziély 🌸';
+  } else if(dias===1){
+    msg='Olá, '+nome+'! 😊\n\nSeu '+planoMod+' vence *amanhã*, dia '+vencStr+'.\n\nValor para renovação: R$ '+valor.toFixed(2)+'.\n\nBeijos, Graziély 🌸';
+  } else {
+    msg='Olá, '+nome+'! 😊\n\nSeu '+planoMod+' vence no dia *'+vencStr+'*.\n\nValor para renovação: R$ '+valor.toFixed(2)+'.\n\nBeijos, Graziély 🌸';
+  }
+  const url='https://wa.me/55'+tel+'?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+}
+
+function registrarPag(id){
+  const a=alunos.find(x=>x.id===id); if(!a) return;
+  const novoInicio=todayStr;
+  const dias=PLANO_DIAS[a.plano]||30;
+  const novoVenc=addDays(novoInicio, dias);
+  a.pagData=novoInicio;
+  a.proxVenc=novoVenc;
+  // also update the matching service in servicos[]
+  if(a.servicos&&a.servicos.length){
+    const isPilates=(a.modalidade||'').startsWith('Pilates');
+    const srvIdx=a.servicos.findIndex(s=>isPilates?s.modalidade===a.modalidade:s.plano===a.plano);
+    if(srvIdx>=0){
+      a.servicos[srvIdx].pagData=novoInicio;
+      a.servicos[srvIdx].proxVenc=novoVenc;
+    }
+  }
+  const valorReal=getValorCorreto(a);
+  registrarPagHistorico({...a, pagData:novoInicio, valor:valorReal});
+  // Regenerate recurring classes for the new period
+  generateRecurring(a, false);
+  persist(); renderAll();
+  const meses=MESES_PLANO[a.plano]||1;
+  const label=meses===1?'próximo mês':meses===6?'próximos 6 meses':'próximo ano';
+  showToast('✓ Pago! Aulas do '+label+' geradas automaticamente 📅');
+}
+
+/* ═══════════════════════════════════════
+   FORM: AULA (avulsa / editar)
+═══════════════════════════════════════ */
+let editApptId=null;
+let selApptColor='pink';
+
+function openForm(dateStr, alunoName, faltaRepId){
+  editApptId=null; selApptColor='pink';
+  document.getElementById('formTitle').textContent='Nova Aula';
+  document.getElementById('formSub').textContent='Agendamento avulso';
+  document.getElementById('fAluno').value=alunoName||'';
+  document.getElementById('fData').value=dateStr||todayStr;
+  document.getElementById('fStart').value='08:00';
+  document.getElementById('fEnd').value='09:00';
+  document.getElementById('fMod').value='Pilates Individual';
+  document.getElementById('fObs').value='';
+  document.getElementById('fRep').checked=!!faltaRepId;
+  document.getElementById('btnDelAppt').style.display='none';
+  document.getElementById('btnFaltaFromAppt').style.display='none';
+  document.getElementById('alSug').innerHTML=alunos.map(a=>`<option value="${a.nome}">`).join('');
+  document.getElementById('formOverlay').dataset.faltaRepId=faltaRepId||'';
+  document.getElementById('novaPessoaBtn').style.display='none';
+  document.getElementById('sessaoValorWrap').style.display='none';
+  document.getElementById('pacoteInfoBox').style.display='none';
+  document.getElementById('fSessaoValor').value='';
+  checkSessaoAvulsa();
+  document.getElementById('formOverlay').style.display='flex';
+}
+
+function openEdit(id){
+  const a=appts.find(x=>x.id===id); if(!a) return;
+  editApptId=id; selApptColor=a.color||'pink';
+  document.getElementById('formTitle').textContent=a.fixo?'Aula Fixa':'Editar Aula';
+  document.getElementById('formSub').textContent=a.fixo?'Editar esta ocorrência':'';
+  document.getElementById('fAluno').value=a.aluno;
+  document.getElementById('fData').value=a.date;
+  document.getElementById('fStart').value=a.start;
+  document.getElementById('fEnd').value=a.end;
+  document.getElementById('fMod').value=a.modalidade;
+  document.getElementById('fObs').value=a.obs||'';
+  document.getElementById('fRep').checked=a.rep||false;
+  document.getElementById('btnDelAppt').style.display='inline-block';
+  document.getElementById('btnFaltaFromAppt').style.display='inline-block';
+  document.getElementById('alSug').innerHTML=alunos.map(x=>`<option value="${x.nome}">`).join('');
+  document.getElementById('formOverlay').dataset.faltaRepId='';
+  document.getElementById('novaPessoaBtn').style.display='none';
+  document.getElementById('sessaoValorWrap').style.display='none';
+  checkSessaoAvulsa();
+  document.getElementById('formOverlay').style.display='flex';
+}
+
+function closeForm(){document.getElementById('formOverlay').style.display='none';editApptId=null;}
+
+function saveAppt(){
+  const aluno=document.getElementById('fAluno').value.trim();
+  const date=document.getElementById('fData').value;
+  const start=document.getElementById('fStart').value;
+  const end=document.getElementById('fEnd').value;
+  const modalidade=document.getElementById('fMod').value;
+  const obs=document.getElementById('fObs').value.trim();
+  const rep=document.getElementById('fRep').checked;
+  const faltaRepId=document.getElementById('formOverlay').dataset.faltaRepId;
+  if(!aluno||!date||!start||!end){showToast('⚠️ Preencha todos os campos');return;}
+  if(start>=end){showToast('⚠️ Horário inválido');return;}
+  let al=alunos.find(a=>a.nome===aluno);
+  if(!al){al={id:uid(),nome:aluno,modalidade,foco:'',obs:'',color:'pink',plano:'Avulso',pagData:todayStr,proxVenc:addDays(todayStr,30),valor:0,horarios:[]};alunos.push(al);}
+  const valorSessao=parseFloat(document.getElementById('fSessaoValor').value)||0;
+  let newId;
+  if(editApptId){
+    appts=appts.map(a=>a.id===editApptId?{...a,aluno,date,start,end,modalidade,obs,rep,color:selApptColor}:a);
+    newId=editApptId; showToast('✓ Aula atualizada!');
+  } else {
+    newId=uid();
+    appts.push({id:newId,alunoId:al.id,aluno,date,start,end,modalidade,obs,color:al.color||'pink',fixo:false,rep,faltaId:faltaRepId||null});
+    // Cria sessão avulsa pendente APENAS se não tiver pacote já pago
+    const isSessaoAvulsa=modalidade==='Fisioterapia'||modalidade.startsWith('Massagem');
+    if(isSessaoAvulsa){
+      const infoPacote=getSessoesRestantes(al.id, modalidade);
+      const temPacotePago=!!infoPacote; // tem pacote = já pagou à vista, não cobrar de novo
+      if(!temPacotePago){
+        sessoesPend.push({
+          id:uid(),
+          apptId:newId,
+          alunoId:al.id,
+          aluno,
+          modalidade,
+          data:date,
+          valor:valorSessao||SESSAO_VALOR_PADRAO(modalidade),
+          pago:false,
+          criadoEm:todayStr
+        });
+      }
+      // Se tem pacote, apenas agenda — o pagamento já foi registrado no fechamento
+    }
+    showToast('✓ Aula agendada!');
+  }
+  if(faltaRepId){
+    const f=faltas.find(x=>x.id===faltaRepId);
+    if(f){f.reposta=true;f.repApptId=newId;}
+  }
+  persist();closeForm();renderAll();
+}
+
+function openFaltaFromAppt(){
+  const a=appts.find(x=>x.id===editApptId); if(!a) return;
+  document.getElementById('ffAluno').value=a.aluno;
+  document.getElementById('ffData').value=a.date;
+  document.getElementById('ffObs').value='';
+  selMotivoState=null;
+  document.getElementById('mBtnFaltou').className='motivo-btn';
+  document.getElementById('mBtnAvisou').className='motivo-btn';
+  document.getElementById('motivoWarnBox').style.display='none';
+  document.getElementById('alSug2').innerHTML=alunos.map(x=>`<option value="${x.nome}">`).join('');
+  closeForm();
+  document.getElementById('faltaOverlay').style.display='flex';
+}
+
+/* ═══════════════════════════════════════
+   FORM: ALUNO
+═══════════════════════════════════════ */
+let editAlunoId=null;
+let selAlunoColor='pink';
+let selDows={};
+
+function safeEl(id){ return document.getElementById(id)||{style:{},textContent:'',value:'',innerHTML:'',checked:false,display:''}; }
+   // dow -> {start,end}
+
+function openAlunoForm(){
+  editAlunoId=null; selAlunoColor='pink';
+  document.getElementById('alunoFormTitle').textContent='Novo Aluno';
+  document.getElementById('aNome').value='';
+  document.getElementById('aMatricula').value=todayStr;
+  document.getElementById('aWhatsapp').value='';
+  document.getElementById('aFoco').value='';
+  document.getElementById('aObs').value='';
+  document.getElementById('alunoDelBtn').style.display='none';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.c==='pink'));
+  setFotoPerfil(null); fotoPerfAtual=null;
+  servicosTemp=[];
+  addServico();
+  document.getElementById('jaPagouWrap').style.display='block';
+  document.getElementById('aJaPagou').checked=false;
+  document.getElementById('alunoOverlay').style.display='flex';
+}
+
+function openAlunoEdit(id){
+  const a=alunos.find(x=>x.id===id); if(!a) return;
+  editAlunoId=id; selAlunoColor=a.color||'pink';
+  document.getElementById('alunoFormTitle').textContent='Editar Aluno';
+  document.getElementById('aNome').value=a.nome;
+  document.getElementById('aMatricula').value=a.matricula||a.pagData||todayStr;
+  document.getElementById('aWhatsapp').value=a.whatsapp||'';
+  setFotoPerfil(a.foto||null);
+  document.getElementById('aFoco').value=a.foco||'';
+  // load services
+  servicosTemp=[];
+  if(a.servicos&&a.servicos.length){
+    a.servicos.forEach(s=>addServico(s));
+  } else {
+    // migrate old single-service aluno
+    addServico({id:uid(),modalidade:a.modalidade||'Pilates Individual',plano:a.plano||'Mensal',pagData:a.pagData||todayStr,proxVenc:a.proxVenc||todayStr,valor:a.valor||0,horarios:a.horarios||[]});
+  }
+  document.getElementById('aObs').value=a.obs||'';
+  document.getElementById('alunoDelBtn').style.display='inline-block';
+  document.getElementById('jaPagouWrap').style.display='none';
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('sel',c.dataset.c===selAlunoColor));
+  // restore horarios
+  document.querySelectorAll('.dow-btn').forEach(b=>b.classList.remove('sel'));
+  (a.horarios||[]).forEach(h=>{
+    selDows[h.dow]={start:h.start,end:h.end};
+    const btn=document.querySelector(`.dow-btn[data-d="${h.dow}"]`);
+    if(btn) btn.classList.add('sel');
+  });
+  renderDowTimeSlots();
+  document.getElementById('alunoOverlay').style.display='flex';
+}
+
+function closeAlunoForm(){
+  document.getElementById('alunoOverlay').style.display='none';
+  editAlunoId=null;
+  if(_voltarAgendamento){
+    _voltarAgendamento=false;
+    // find the saved aluno by name match
+    const al=alunos.find(a=>a.nome.toLowerCase()===_nomeParaAgendamento.toLowerCase())||
+             alunos[alunos.length-1];
+    const nomeReal=al?al.nome:_nomeParaAgendamento;
+    document.getElementById('fAluno').value=nomeReal;
+    document.getElementById('alSug').innerHTML=alunos.map(a=>`<option value="${a.nome}">`).join('');
+    document.getElementById('novaPessoaBtn').style.display='none';
+    // auto-set modalidade to match aluno's first service
+    if(al){
+      const srvs=al.servicos&&al.servicos.length?al.servicos:[{modalidade:al.modalidade}];
+      const primMod=srvs[0].modalidade||'Pilates Individual';
+      document.getElementById('fMod').value=primMod;
+    }
+    checkSessaoAvulsa();
+    document.getElementById('formOverlay').style.display='flex';
+    showToast('✓ '+nomeReal+' cadastrado! Continue o agendamento.');
+  }
+}
+
+function pickColor(el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); selAlunoColor=el.dataset.c;
+}
+
+function toggleDow(btn){
+  const d=parseInt(btn.dataset.d);
+  btn.classList.toggle('sel');
+  if(btn.classList.contains('sel')){
+    selDows[d]=selDows[d]||{start:'08:00',end:'09:00'};
+  } else {
+    delete selDows[d];
+  }
+  renderDowTimeSlots();
+  updatePreco();
+}
+
+function renderDowTimeSlots(){
+  const el=safeEl('dowTimeSlots');
+  const keys=Object.keys(selDows).map(Number).sort((a,b)=>a-b);
+  if(!keys.length){el.innerHTML='';return;}
+  el.innerHTML=keys.map(d=>`
+    <div class="dow-time-block">
+      <div class="dow-time-lbl">${DOWNAMES[d]}</div>
+      <div class="row2">
+        <div><label class="field-lbl">Início</label>
+          <input class="field" type="time" value="${selDows[d].start}" style="margin-bottom:0"
+            onchange="selDows[${d}].start=this.value"></div>
+        <div><label class="field-lbl">Fim</label>
+          <input class="field" type="time" value="${selDows[d].end}" style="margin-bottom:0"
+            onchange="selDows[${d}].end=this.value"></div>
+      </div>
+    </div>`).join('');
+}
+
+function updateProxVenc(){
+  const plano=document.getElementById('aPlano').value;
+  const pd=document.getElementById('aPagData').value;
+  if(!pd) return;
+  document.getElementById('aProxVenc').value=addDays(pd,PLANO_DIAS[plano]||30);
+}
+
+
+/* ── FOTO PERFIL ALUNO ── */
+let fotoPerfAtual = null;
+
+function setFotoPerfil(src){
+  fotoPerfAtual = src;
+  const img = document.getElementById('fotoPerfImg');
+  const ph  = document.getElementById('fotoPerfPlaceholder');
+  const rm  = document.getElementById('fotoPerfRemove');
+  if(src){
+    img.src = src;
+    img.style.display = 'block';
+    ph.style.display  = 'none';
+    rm.style.display  = 'inline-block';
+  } else {
+    img.src = '';
+    img.style.display = 'none';
+    ph.style.display  = 'flex';
+    rm.style.display  = 'none';
+  }
+}
+
+function handleFotoPerfil(evt){
+  const file = evt.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => setFotoPerfil(e.target.result);
+  reader.readAsDataURL(file);
+  evt.target.value = '';
+}
+
+function removeFotoPerfil(){ setFotoPerfil(null); }
+
+// ── Avatar helper: foto se existir, senão iniciais ──
+function avatarHtml(a, sz, fs, extra){
+  sz  = sz  || 38;
+  fs  = fs  || '.72rem';
+  extra = extra || '';
+  const idx = alunos.indexOf(a);
+  const ac  = AVC[idx>=0 ? idx%AVC.length : 0];
+  if(a.foto){
+    return `<img src="${a.foto}" style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,.5);${extra}">`;
+  }
+  return `<div class="avatar" style="background:${ac};width:${sz}px;height:${sz}px;font-size:${fs};${extra}">${ini(a.nome)}</div>`;
+}
+
+
+/* ═══════════════════════════════════════
+   SESSÕES AVULSAS PENDENTES
+═══════════════════════════════════════ */
+function SESSAO_VALOR_PADRAO(mod){
+  if(mod==='Fisioterapia') return 100;
+  if(mod==='Massagem Relaxante') return 150;
+  if(mod==='Massagem Terapêutica') return 130;
+  return 0;
+}
+
+function checkNovaPessoa(){
+  const nome=document.getElementById('fAluno').value.trim();
+  const existe=alunos.find(a=>a.nome.toLowerCase()===nome.toLowerCase());
+  const btnWrap=document.getElementById('novaPessoaBtn');
+  btnWrap.style.display=(nome.length>=2 && !existe)?'block':'none';
+  checkSessaoAvulsa();
+}
+
+function getSessoesRestantes(alunoId, mod){
+  const a=alunos.find(x=>x.id===alunoId);
+  if(!a) return null;
+  // Build full list of services to search — always include primary fields as fallback
+  const srvs=[];
+  if(a.servicos&&a.servicos.length) srvs.push(...a.servicos);
+  // Always also check primary modalidade/plano (legacy or primary service)
+  if(!srvs.find(s=>s.modalidade===a.modalidade)){
+    srvs.push({modalidade:a.modalidade, plano:a.plano});
+  }
+  const fisioSrv=srvs.find(s=>s.modalidade==='Fisioterapia');
+  if(!fisioSrv) return null;
+  const totalPacote={'5 Sessões':5,'10 Sessões':10}[fisioSrv.plano];
+  if(!totalPacote) return null;
+  const feitas=appts.filter(x=>x.alunoId===alunoId && x.modalidade==='Fisioterapia').length;
+  const restantes=Math.max(0, totalPacote - feitas);
+  return {total:totalPacote, feitas, restantes, plano:fisioSrv.plano};
+}
+
+function checkSessaoAvulsa(){
+  const mod=document.getElementById('fMod').value;
+  const isFisio=mod==='Fisioterapia';
+  const isMassa=mod.startsWith('Massagem');
+  const isSessao=isFisio||isMassa;
+  const wrap=document.getElementById('sessaoValorWrap');
+  const infoBox=document.getElementById('pacoteInfoBox');
+
+  // check if aluno has a package for this modality
+  const nomeAluno=document.getElementById('fAluno').value.trim();
+  const al=alunos.find(a=>a.nome.toLowerCase()===nomeAluno.toLowerCase());
+
+  let temPacote=false;
+  // Update subtitle
+  document.getElementById('formSub').textContent=isSessao&&al?'Sessão para '+al.nome:'Agendamento';
+
+  if(al && isFisio){
+    const info=getSessoesRestantes(al.id, mod);
+    if(info){
+      temPacote=true;
+      // Has package — show progress, hide valor field
+      wrap.style.display='none';
+      const pct=Math.round((info.feitas/info.total)*100);
+      const esgotado=info.restantes===0;
+      const ultima=info.restantes===1;
+      const cls=esgotado?'pacote-info-esgot':ultima?'pacote-info-warn':'pacote-info-ok';
+      const corBarra=esgotado?'#e05555':ultima?'#f59e0b':'#2da88a';
+      const msg=esgotado
+        ? '⚠️ Pacote esgotado! Todas as sessões foram agendadas.'
+        : ultima
+          ? '⚡ Última sessão do pacote! Ao agendar, o pacote estará completo.'
+          : info.restantes+' sessões restantes no pacote';
+      infoBox.style.display='block';
+      infoBox.innerHTML=`<div class="pacote-info-box ${cls}">
+        <div style="font-size:.7rem;font-weight:700;color:#555;margin-bottom:4px">📦 Pacote ${info.plano} de Fisioterapia — já pago à vista</div>
+        <div style="font-size:.88rem;font-weight:700;color:#222;margin-bottom:6px">${msg}</div>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar-fill" style="width:${pct}%;background:${corBarra}"></div>
+        </div>
+        <div style="font-size:.68rem;color:#888;display:flex;justify-content:space-between;margin-top:2px">
+          <span>${info.feitas} agendada${info.feitas!==1?'s':''}</span>
+          <span>${info.total} total</span>
+        </div>
+      </div>`;
+    }
+  }
+
+  if(!temPacote){
+    // No package — show valor field for avulsa billing
+    infoBox.style.display=isSessao?'block':'none';
+    wrap.style.display=isSessao?'block':'none';
+
+    if(isSessao){
+      const padrao=SESSAO_VALOR_PADRAO(mod);
+      // Show info about this being charged as avulsa
+      const icoMod=isFisio?'🏥':'💆';
+      infoBox.innerHTML=`<div class="pacote-info-box" style="background:#f8f9fa;border:1.5px solid #dee2e6">
+        <div style="font-size:.78rem;color:#555">${icoMod} ${al?al.nome+' não tem pacote — ':''}Cobrança avulsa por sessão</div>
+      </div>`;
+      const sug=document.getElementById('fSessaoValorSug');
+      sug.textContent=padrao?'💡 Valor tabela: R$ '+padrao.toFixed(2):'';
+      if(!document.getElementById('fSessaoValor').value)
+        document.getElementById('fSessaoValor').value=padrao||'';
+    } else {
+      infoBox.style.display='none';
+    }
+  }
+}
+
+// Abre cadastro rápido pré-preenchendo nome, e ao fechar volta pro agendamento
+let _voltarAgendamento=false;
+let _nomeParaAgendamento='';
+
+function abrirCadastroRapido(){
+  const nome=document.getElementById('fAluno').value.trim();
+  _voltarAgendamento=true;
+  _nomeParaAgendamento=nome;
+  // save current form state
+  const dataAtual=document.getElementById('fData').value;
+  const modAtual=document.getElementById('fMod').value;
+  document.getElementById('formOverlay').style.display='none';
+  openAlunoForm();
+  document.getElementById('aNome').value=nome;
+  // pre-select modality matching what was chosen in appointment form
+  const cat=modAtual==='Fisioterapia'?'fisio':modAtual.startsWith('Massagem')?'massa':'pilates';
+  // set first service to match the modality being scheduled
+  if(servicosTemp.length>0){
+    servicosTemp[0].modalidade=modAtual;
+    renderServicos();
+  }
+  // restore data back after form open
+  document.getElementById('fData')?document.getElementById('fData').value=dataAtual:null;
+}
+
+// Marcar sessão avulsa como paga
+function pagarSessao(sessaoId){
+  const s=sessoesPend.find(x=>x.id===sessaoId); if(!s) return;
+  s.pago=true;
+  // registra no histórico de pagamentos
+  histPag.push({
+    id:uid(),
+    alunoId:s.alunoId,
+    aluno:s.aluno,
+    data:todayStr,
+    plano:'Avulso',
+    modalidade:s.modalidade,
+    valor:s.valor,
+    validoDe:s.data,
+    validoAte:s.data,
+    sessaoAvulsa:true
+  });
+  persist();
+  renderAll();
+  showToast('✓ Sessão paga!');
+}
+
+// Valor editável da sessão pendente
+function editarValorSessao(sessaoId){
+  const s=sessoesPend.find(x=>x.id===sessaoId); if(!s) return;
+  const novo=prompt(`Alterar valor da sessão de ${s.aluno}:`, s.valor);
+  if(novo===null) return;
+  const v=parseFloat(novo);
+  if(!isNaN(v) && v>=0){ s.valor=v; persist(); renderPag(); }
+}
+
+
+
+/* ═══════════════════════════════════════
+   SERVIÇOS MÚLTIPLOS POR ALUNO
+═══════════════════════════════════════ */
+// servicosTemp: array de {id, modalidade, plano, pagData, proxVenc, valor, horarios, selDow}
+let servicosTemp = [];
+
+const MOD_OPTS = [
+  'Pilates Individual','Pilates em Dupla','Pilates em Grupo',
+  'Fisioterapia','Massagem Relaxante','Massagem Terapêutica'
+];
+const PLANO_OPTS_MOD = {
+  pilates:['Mensal','Semestral','Anual'],
+  fisio:['Avulso','5 Sessões','10 Sessões'],
+  massa:['Avulso']
+};
+
+function modCat(mod){
+  if(!mod) return 'pilates';
+  if(mod.startsWith('Pilates')) return 'pilates';
+  if(mod==='Fisioterapia') return 'fisio';
+  return 'massa';
+}
+
+function planoOptsForMod(mod){
+  return PLANO_OPTS_MOD[modCat(mod)]||['Avulso'];
+}
+
+function addServico(srv){
+  const id = srv ? srv.id : uid();
+  if(!srv){
+    srv = {
+      id, modalidade:'Pilates Individual', plano:'Mensal',
+      pagData:todayStr, proxVenc:addDays(todayStr,30),
+      valor:0, horarios:[]
+    };
+  }
+  // avoid duplicates
+  if(!servicosTemp.find(s=>s.id===id)) servicosTemp.push({...srv});
+  renderServicos();
+}
+
+function removeServico(id){
+  if(servicosTemp.length<=1){showToast('⚠️ Mantenha ao menos 1 serviço');return;}
+  servicosTemp=servicosTemp.filter(s=>s.id!==id);
+  renderServicos();
+}
+
+function renderServicos(){
+  const wrap=document.getElementById('servicosWrap');
+  if(!wrap) return;
+  const DNAMES=['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+  wrap.innerHTML='';
+  servicosTemp.forEach(function(srv,i){
+    const cat=modCat(srv.modalidade);
+    const tagCls='servico-tag servico-'+cat;
+    const planoOpts=planoOptsForMod(srv.modalidade);
+    const isPilates=cat==='pilates';
+    const isAvulso=srv.plano==='Avulso';
+
+    // preco sugerido
+    let precoSug='';
+    if(isPilates && PILATES_PRECOS[srv.plano]){
+      const n=(srv.horarios||[]).length;
+      const freq=n>=3?'3x':n===2?'2x':'1x';
+      const meses=MESES_PLANO[srv.plano]||1;
+      const mensal=PILATES_PRECOS[srv.plano][freq];
+      const total=mensal*meses;
+      precoSug=meses>1?'R$ '+total.toFixed(2)+' a vista ('+meses+'x R$'+mensal+')':'R$ '+mensal.toFixed(2)+'/mes';
+    } else if(cat==='fisio' && FISIO_PRECOS[srv.plano]!=null){
+      precoSug='R$ '+FISIO_PRECOS[srv.plano].toFixed(2)+(isAvulso?' por sessao':' a vista');
+    } else if(cat==='massa'){
+      const v=MASSA_PRECOS[srv.modalidade]||0;
+      if(v) precoSug='R$ '+v.toFixed(2)+' por sessao';
+    }
+
+    // Build card div
+    const card=document.createElement('div');
+    card.className='servico-card';
+    card.id='srv-'+srv.id;
+
+    // Header
+    const hdr=document.createElement('div');
+    hdr.className='servico-card-header';
+    const tag=document.createElement('span');
+    tag.className=tagCls;
+    tag.textContent=srv.modalidade;
+    hdr.appendChild(tag);
+    if(servicosTemp.length>1){
+      const rm=document.createElement('button');
+      rm.className='btn-rm-servico';
+      rm.textContent='✕';
+      rm.onclick=function(){removeServico(srv.id);};
+      hdr.appendChild(rm);
+    }
+    card.appendChild(hdr);
+
+    // Modalidade + Plano row
+    const row1=document.createElement('div');
+    row1.className='row2'; row1.style.marginBottom='8px';
+    const d1=document.createElement('div');
+    const l1=document.createElement('label'); l1.className='field-lbl'; l1.textContent='Modalidade';
+    const s1=document.createElement('select'); s1.className='field';
+    MOD_OPTS.forEach(function(m){
+      const o=document.createElement('option');
+      o.value=m; o.textContent=m;
+      if(m===srv.modalidade) o.selected=true;
+      s1.appendChild(o);
+    });
+    s1.onchange=function(){onSrvMod(s1,srv.id);};
+    d1.appendChild(l1); d1.appendChild(s1); row1.appendChild(d1);
+    const d2=document.createElement('div');
+    const l2=document.createElement('label'); l2.className='field-lbl'; l2.textContent='Plano';
+    const s2=document.createElement('select'); s2.className='field';
+    planoOpts.forEach(function(p){
+      const o=document.createElement('option');
+      o.value=p; o.textContent=p;
+      if(p===srv.plano) o.selected=true;
+      s2.appendChild(o);
+    });
+    s2.onchange=function(){onSrvPlano(s2,srv.id);};
+    d2.appendChild(l2); d2.appendChild(s2); row1.appendChild(d2);
+    card.appendChild(row1);
+
+    // Dias da semana (only for Pilates)
+    if(isPilates){
+      const dowSection=document.createElement('div');
+      dowSection.style.marginBottom='10px';
+      const lDow=document.createElement('label'); lDow.className='field-lbl'; lDow.textContent='Dias da semana';
+      const info=document.createElement('div'); info.className='info-box';
+      info.style.cssText='margin-bottom:8px;font-size:.72rem';
+      info.textContent='Selecione os dias e defina o horario. Aulas geradas automaticamente.';
+      const dowWrap=document.createElement('div'); dowWrap.className='dow-wrap';
+      const srvHorMap={};
+      (srv.horarios||[]).forEach(function(h){srvHorMap[h.dow]={start:h.start,end:h.end};});
+      DNAMES.forEach(function(dn,d){
+        const btn=document.createElement('button');
+        btn.type='button'; btn.className='dow-btn'+(srvHorMap[d]?' sel':'');
+        btn.dataset.d=d; btn.textContent=dn;
+        btn.onclick=function(){toggleSrvDow(btn,srv.id);};
+        dowWrap.appendChild(btn);
+      });
+      dowSection.appendChild(lDow);
+      dowSection.appendChild(info);
+      dowSection.appendChild(dowWrap);
+      // Time slots
+      const slots=document.createElement('div'); slots.style.marginTop='8px';
+      Object.keys(srvHorMap).map(Number).sort(function(a,b){return a-b;}).forEach(function(d){
+        const h=srvHorMap[d];
+        const row=document.createElement('div');
+        row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:6px';
+        const lbl=document.createElement('span');
+        lbl.style.cssText='font-size:.75rem;color:var(--teal-dark);min-width:28px;font-weight:600';
+        lbl.textContent=DNAMES[d];
+        const tStart=document.createElement('input'); tStart.type='time'; tStart.value=h.start;
+        tStart.style.cssText='flex:1;padding:5px 8px;border:1.5px solid #e8d5e4;border-radius:8px;font-size:.8rem';
+        tStart.onchange=function(){onSrvTime(tStart,srv.id,d,'start');};
+        const sep=document.createElement('span');
+        sep.style.cssText='font-size:.7rem;color:#aaa'; sep.textContent='ate';
+        const tEnd=document.createElement('input'); tEnd.type='time'; tEnd.value=h.end;
+        tEnd.style.cssText='flex:1;padding:5px 8px;border:1.5px solid #e8d5e4;border-radius:8px;font-size:.8rem';
+        tEnd.onchange=function(){onSrvTime(tEnd,srv.id,d,'end');};
+        row.appendChild(lbl); row.appendChild(tStart); row.appendChild(sep); row.appendChild(tEnd);
+        slots.appendChild(row);
+      });
+      dowSection.appendChild(slots);
+      card.appendChild(dowSection);
+    }
+
+    // Inicio + Vencimento
+    const row2=document.createElement('div');
+    row2.className='row2'; row2.style.marginBottom='8px';
+    const d3=document.createElement('div');
+    const l3=document.createElement('label'); l3.className='field-lbl'; l3.textContent='Inicio do plano';
+    const inp3=document.createElement('input'); inp3.className='field'; inp3.type='date';
+    inp3.value=srv.pagData||todayStr;
+    inp3.onchange=function(){onSrvDate(inp3,srv.id);};
+    d3.appendChild(l3); d3.appendChild(inp3); row2.appendChild(d3);
+    const d4=document.createElement('div');
+    const l4=document.createElement('label'); l4.className='field-lbl'; l4.textContent='Vencimento';
+    const inp4=document.createElement('input'); inp4.className='field'; inp4.type='date';
+    inp4.value=srv.proxVenc||''; inp4.readOnly=true;
+    inp4.style.cssText='background:#f8f8f8;color:var(--gray)';
+    d4.appendChild(l4); d4.appendChild(inp4); row2.appendChild(d4);
+    card.appendChild(row2);
+
+    // Valor
+    const rowV=document.createElement('div'); rowV.style.marginBottom='4px';
+    const lV=document.createElement('label'); lV.className='field-lbl'; lV.textContent='Valor (R$)';
+    const inpV=document.createElement('input'); inpV.className='field'; inpV.type='number';
+    inpV.placeholder='0,00'; inpV.step='0.01'; inpV.value=srv.valor||'';
+    inpV.onchange=function(){onSrvValor(inpV,srv.id);};
+    rowV.appendChild(lV); rowV.appendChild(inpV);
+    if(precoSug){
+      const sug=document.createElement('div');
+      sug.style.cssText='font-size:.68rem;color:var(--teal);margin-top:2px;cursor:pointer';
+      sug.innerHTML='💡 '+precoSug+' <span style="color:var(--teal-dark);font-weight:600">↑ Usar</span>';
+      sug.onclick=function(){aplicarPrecoSrv(srv.id);};
+      rowV.appendChild(sug);
+    }
+    card.appendChild(rowV);
+
+    wrap.appendChild(card);
+  });
+}
+
+function toggleSrvDow(btn, srvId){
+  const s=servicosTemp.find(x=>x.id===srvId); if(!s) return;
+  const d=parseInt(btn.dataset.d);
+  if(!s.horarios) s.horarios=[];
+  const idx=s.horarios.findIndex(h=>h.dow===d);
+  if(idx>=0){
+    s.horarios.splice(idx,1);
+  } else {
+    s.horarios.push({dow:d,start:'08:00',end:'09:00'});
+    s.horarios.sort((a,b)=>a.dow-b.dow);
+  }
+  renderServicos();
+  // re-calc price with new frequency
+  const cat=modCat(s.modalidade);
+  if(cat==='pilates' && PILATES_PRECOS[s.plano]){
+    const n=s.horarios.length;
+    const freq=n>=3?'3x':n===2?'2x':'1x';
+    s.valor=PILATES_PRECOS[s.plano][freq]*(MESES_PLANO[s.plano]||1);
+    renderServicos();
+  }
+}
+
+function onSrvTime(inp, srvId, dow, field){
+  const s=servicosTemp.find(x=>x.id===srvId); if(!s) return;
+  const h=s.horarios.find(x=>x.dow===dow); if(!h) return;
+  h[field]=inp.value;
+}
+
+
+function onSrvMod(sel, id){
+  const s=servicosTemp.find(x=>x.id===id); if(!s) return;
+  s.modalidade=sel.value;
+  const cat=modCat(s.modalidade);
+  const opts=planoOptsForMod(s.modalidade);
+  if(!opts.includes(s.plano)) s.plano=opts[0];
+  // auto-fill valor from table
+  if(cat==='fisio' && FISIO_PRECOS[s.plano]!=null) s.valor=FISIO_PRECOS[s.plano];
+  if(cat==='massa') s.valor=MASSA_PRECOS[s.modalidade]||0;
+  renderServicos();
+}
+
+function onSrvPlano(sel, id){
+  const s=servicosTemp.find(x=>x.id===id); if(!s) return;
+  s.plano=sel.value;
+  // recalc proxVenc
+  s.proxVenc=addDays(s.pagData||todayStr, PLANO_DIAS[s.plano]||30);
+  // auto-fill valor
+  const cat=modCat(s.modalidade);
+  if(cat==='pilates' && PILATES_PRECOS[s.plano]){
+    const n=(s.horarios||[]).length;
+    const freq=n>=3?'3x':n===2?'2x':'1x';
+    s.valor=PILATES_PRECOS[s.plano][freq]*(MESES_PLANO[s.plano]||1);
+  }
+  if(cat==='fisio' && FISIO_PRECOS[s.plano]!=null) s.valor=FISIO_PRECOS[s.plano];
+  renderServicos();
+}
+
+function onSrvDate(inp, id){
+  const s=servicosTemp.find(x=>x.id===id); if(!s) return;
+  s.pagData=inp.value;
+  s.proxVenc=addDays(inp.value, PLANO_DIAS[s.plano]||30);
+  renderServicos();
+}
+
+function onSrvValor(inp, id){
+  const s=servicosTemp.find(x=>x.id===id); if(!s) return;
+  s.valor=parseFloat(inp.value)||0;
+}
+
+function aplicarPrecoSrv(id){
+  const s=servicosTemp.find(x=>x.id===id); if(!s) return;
+  const cat=modCat(s.modalidade);
+  if(cat==='pilates' && PILATES_PRECOS[s.plano]){
+    const n=(s.horarios||[]).length;
+    const freq=n>=3?'3x':n===2?'2x':'1x';
+    s.valor=PILATES_PRECOS[s.plano][freq]*(MESES_PLANO[s.plano]||1);
+  } else if(cat==='fisio') s.valor=FISIO_PRECOS[s.plano]||0;
+  else if(cat==='massa') s.valor=MASSA_PRECOS[s.modalidade]||0;
+  renderServicos();
+}
+
+
+function saveAluno(){
+  const nome=document.getElementById('aNome').value.trim();
+  if(!nome){showToast('⚠️ Informe o nome');return;}
+  // each service has its own horarios from toggleSrvDow
+
+  // Use first service as primary for backward-compat fields
+  const primSrv=servicosTemp[0]||{};
+  const obj={
+    id:editAlunoId||uid(),
+    nome,
+    // primary service (for backward compat)
+    modalidade:primSrv.modalidade||'Pilates Individual',
+    plano:primSrv.plano||'Mensal',
+    pagData:primSrv.pagData||todayStr,
+    proxVenc:primSrv.proxVenc||todayStr,
+    valor:primSrv.valor||0,
+    horarios:primSrv.horarios||[],
+    // new: all services
+    servicos:servicosTemp.map(s=>({...s})),
+    matricula:document.getElementById('aMatricula').value||todayStr,
+    whatsapp:document.getElementById('aWhatsapp').value.trim(),
+    foco:document.getElementById('aFoco').value.trim(),
+    obs:document.getElementById('aObs').value.trim(),
+    color:selAlunoColor,
+    foto:fotoPerfAtual||null,
+  };
+  if(editAlunoId){
+    alunos=alunos.map(a=>a.id===editAlunoId?obj:a);
+    showToast('✓ Aluno atualizado! Regenerando aulas...');
+  } else {
+    alunos.push(obj);
+    const jaPagou=document.getElementById('aJaPagou').checked;
+    if(jaPagou){
+      // Register payment for each service — won't appear in Pgto until next due date
+      (obj.servicos||[obj]).forEach(srv=>{
+        if(srv.valor>0){
+          registrarPagHistorico({...obj, plano:srv.plano, modalidade:srv.modalidade, pagData:srv.pagData, proxVenc:srv.proxVenc, valor:srv.valor});
+        }
+      });
+      showToast('✓ Aluno cadastrado e pagamento registrado! 💰');
+    } else {
+      showToast('✓ Aluno cadastrado! Gerando aulas...');
+    }
+  }
+  generateRecurring(obj, false);
+  persist();
+  closeAlunoForm();
+  renderAll();
+}
+
+/* ═══════════════════════════════════════
+   FORM: FALTA
+═══════════════════════════════════════ */
+let selMotivoState=null;
+
+function selMotivo(m){
+  selMotivoState=m;
+  document.getElementById('mBtnFaltou').className='motivo-btn'+(m==='faltou'?' sel-faltou':'');
+  document.getElementById('mBtnAvisou').className='motivo-btn'+(m==='avisou'?' sel-avisou':'');
+  document.getElementById('motivoWarnBox').style.display=m==='faltou'?'block':'none';
+}
+
+function openFaltaForm(){
+  document.getElementById('ffAluno').value='';
+  document.getElementById('ffData').value=todayStr;
+  document.getElementById('ffObs').value='';
+  selMotivoState=null;
+  document.getElementById('mBtnFaltou').className='motivo-btn';
+  document.getElementById('mBtnAvisou').className='motivo-btn';
+  document.getElementById('motivoWarnBox').style.display='none';
+  document.getElementById('alSug2').innerHTML=alunos.map(a=>`<option value="${a.nome}">`).join('');
+  document.getElementById('faltaOverlay').style.display='flex';
+}
+
+function closeFaltaForm(){document.getElementById('faltaOverlay').style.display='none';}
+
+function saveFalta(){
+  const aluno=document.getElementById('ffAluno').value.trim();
+  const data=document.getElementById('ffData').value;
+  const obs=document.getElementById('ffObs').value.trim();
+  if(!aluno||!data){showToast('⚠️ Preencha aluno e data');return;}
+  if(!selMotivoState){showToast('⚠️ Selecione o motivo da falta');return;}
+  const al=alunos.find(a=>a.nome===aluno);
+  faltas.push({id:uid(),aluno,alunoId:al?.id||null,data,motivo:selMotivoState,obs,reposta:false,repApptId:null});
+  persist();closeFaltaForm();renderAll();showToast('📌 Falta registrada!');
+}
+
+/* ═══════════════════════════════════════
+   FORM: REPOSIÇÃO
+═══════════════════════════════════════ */
+let repFaltaId=null;
+
+function openRepForm(faltaId){
+  const f=faltas.find(x=>x.id===faltaId); if(!f) return;
+  repFaltaId=faltaId;
+  const al=alunos.find(a=>a.id===f.alunoId);
+  document.getElementById('repSub').textContent=`Reposição para ${f.aluno}`;
+  // infobox
+  let info=`<b>${f.aluno}</b> — faltou em ${dtLocal(f.data).toLocaleDateString('pt-BR',{day:'numeric',month:'long'})}<br>`;
+  if(al){
+    info+=`Plano: <b>${al.plano}</b> · Válido até <b>${dtLocal(al.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'})}</b>`;
+    document.getElementById('repData').min=todayStr;
+    document.getElementById('repData').max=al.proxVenc;
+  }
+  document.getElementById('repInfoBox').innerHTML=info;
+  document.getElementById('repData').value=todayStr;
+  document.getElementById('repStart').value=al&&al.horarios&&al.horarios.length?al.horarios[0].start:'08:00';
+  document.getElementById('repEnd').value=al&&al.horarios&&al.horarios.length?al.horarios[0].end:'09:00';
+  document.getElementById('repObs').value='';
+  document.getElementById('repDateWarn').style.display='none';
+  document.getElementById('repOverlay').style.display='flex';
+}
+
+function closeRepForm(){document.getElementById('repOverlay').style.display='none';repFaltaId=null;}
+
+function validateRepDate(){
+  const f=faltas.find(x=>x.id===repFaltaId); if(!f) return;
+  const al=alunos.find(a=>a.id===f.alunoId); if(!al) return;
+  const v=document.getElementById('repData').value;
+  const warn=document.getElementById('repDateWarn');
+  warn.style.display=(v>al.proxVenc)?'block':'none';
+}
+
+function saveReposicao(){
+  const f=faltas.find(x=>x.id===repFaltaId); if(!f) return;
+  const al=alunos.find(a=>a.id===f.alunoId);
+  const data=document.getElementById('repData').value;
+  const start=document.getElementById('repStart').value;
+  const end=document.getElementById('repEnd').value;
+  const obs=document.getElementById('repObs').value.trim();
+  if(!data||!start||!end){showToast('⚠️ Preencha todos os campos');return;}
+  if(al && data>al.proxVenc){
+    showToast('⚠️ Data fora do período do plano'); return;
+  }
+  const newId=uid();
+  appts.push({
+    id:newId,
+    alunoId:al?.id||null,
+    aluno:f.aluno,
+    date:data,start,end,
+    modalidade:al?.modalidade||'Pilates Individual',
+    obs:obs||'Reposição de aula',
+    color:al?.color||'pink',
+    fixo:false,
+    rep:true,
+    faltaId:repFaltaId
+  });
+  f.reposta=true; f.repApptId=newId;
+  persist();closeRepForm();renderAll();showToast('🔄 Reposição agendada!');
+}
+
+/* ═══════════════════════════════════════
+   CONFIRM / DELETE
+═══════════════════════════════════════ */
+let confirmTarget=null;
+
+function askDel(type){
+  confirmTarget=type;
+  document.getElementById('confirmTitle').textContent=type==='appt'?'Remover esta aula?':'Remover aluno?';
+  document.getElementById('confirmMsg').textContent=type==='aluno'?'Isso não remove as aulas já agendadas.':'Esta ação não pode ser desfeita.';
+  document.getElementById('confirmOkBtn').style.background=type==='aluno'?'#e05555':'#e05555';
+  document.getElementById('confirmOverlay').style.display='flex';
+}
+function closeConfirm(){document.getElementById('confirmOverlay').style.display='none';}
+function doConfirm(){
+  if(confirmTarget==='appt'){
+    appts=appts.filter(a=>a.id!==editApptId);
+    persist();closeForm();showToast('🗑 Aula removida');
+  } else if(confirmTarget==='aluno'){
+    alunos=alunos.filter(a=>a.id!==editAlunoId);
+    persist();closeAlunoForm();showToast('🗑 Aluno removido');
+  }
+  closeConfirm();renderAll();
+}
+
+/* ═══════════════════════════════════════
+   VIEW / FAB / TOAST
+═══════════════════════════════════════ */
+let currentView='lista';
+function setView(v){
+  currentView=v;
+  const views={lista:'Lista',agenda:'Agenda',alunos:'Alunos',faltas:'Faltas',pag:'Pag',hist:'Hist',evol:'Evol',relatorio:'Relatorio'};
+  Object.keys(views).forEach(k=>{
+    const ve=document.getElementById('view'+views[k]);
+    const be=document.getElementById('btn'+views[k]);
+    if(ve) ve.style.display=k===v?'block':'none';
+    if(be) be.className=k===v?'active':'';
+  });
+  const fabLabels={lista:'+',agenda:'+',alunos:'👤',faltas:'📌',pag:'+'};
+  document.getElementById('fabBtn').textContent=fabLabels[v]||'+';
+  if(v==='agenda'){renderCalendar();renderAgendaDay();}
+  if(v==='alunos') renderAlunos();
+  if(v==='faltas') renderFaltas();
+  if(v==='pag')    renderPag();
+  if(v==='hist')   renderHist();
+  if(v==='evol')   renderEvol();
+  if(v==='relatorio') renderRelatorio();
+}
+
+function fabAction(){
+  if(currentView==='alunos') openAlunoForm();
+  else if(currentView==='faltas') openFaltaForm();
+  else openForm();
+}
+
+function oc(e,id){if(e.target.id===id) document.getElementById(id).style.display='none';}
+
+function showToast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+
+/* ═══════════════════════════════════════
+   HISTÓRICO DE PAGAMENTOS (aba)
+═══════════════════════════════════════ */
+function renderHist(){
+  const el=document.getElementById('histContent');
+  if(!alunos.length){el.innerHTML='<div class="empty">Nenhum aluno cadastrado</div>';return;}
+
+  // Group alunos by category
+  const cats=[
+    {key:'pilates',emoji:'🧘',label:'Pilates',cor:'var(--pink-dark)'},
+    {key:'fisio',emoji:'🏥',label:'Fisioterapia',cor:'var(--teal-dark)'},
+    {key:'massa',emoji:'💆',label:'Massagem',cor:'var(--lav)'},
+  ];
+  let html='';
+  cats.forEach(cat=>{
+    const list=alunos.filter(a=>modCategoria(a.modalidade)===cat.key);
+    if(!list.length) return;
+    html+=`<div style="display:flex;align-items:center;gap:8px;margin:14px 16px 10px">
+      <div style="width:4px;height:20px;background:${cat.cor};border-radius:2px"></div>
+      <span style="font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:${cat.cor};font-weight:600">${cat.emoji} ${cat.label}</span>
+    </div>`;
+    list.forEach(a=>{
+      const idx=alunos.indexOf(a), ac=AVC[idx%AVC.length];
+      const pags=histPag.filter(p=>p.alunoId===a.id);
+      const total=pags.reduce((s,p)=>s+Number(p.valor),0);
+      html+=`<div class="pay-card" onclick="openHistPag('${a.id}')" style="cursor:pointer">
+        <div style="display:flex;align-items:center;gap:12px">
+          ${avatarHtml(a,38,'.72rem')}
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:.9rem">${a.nome}</div>
+            <div style="font-size:.72rem;color:var(--gray)">${getPlanoLabel(a)}</div>
+            <div style="font-size:.7rem;color:var(--teal-dark);margin-top:3px;font-weight:600">${pags.length} pagamento${pags.length!==1?'s':''} · Total R$ ${total.toFixed(2)}</div>
+          </div>
+          <div class="arr">›</div>
+        </div>
+      </div>`;
+    });
+  });
+  if(!html) html='<div class="empty">Nenhum aluno cadastrado</div>';
+  el.innerHTML=html;
+}
+
+
+/* ═══════════════════════════════════════
+   EVOLUÇÃO DOS ALUNOS
+═══════════════════════════════════════ */
+let evolucoes = JSON.parse(localStorage.getItem('gz4_evolucoes')||'[]');
+let evolAlunoAtivo = null;   // id do aluno aberto
+let evolModAtiva   = null;   // modalidade ativa no detalhe
+let evolFotosTemp  = [];     // base64 das fotos da entrada atual
+let evolEditId     = null;
+let dorSel         = null;
+
+function persistEvol(){
+  localStorage.setItem('gz4_evolucoes', JSON.stringify(evolucoes));
+}
+
+// ── Dor bar colors ──
+function dorColor(n){
+  if(n<=2) return '#2da88a';
+  if(n<=4) return '#7abd5c';
+  if(n<=6) return '#f59e0b';
+  if(n<=8) return '#e8973a';
+  return '#e05555';
+}
+
+function buildDorBar(selVal){
+  const bar=document.getElementById('dorBar');
+  bar.innerHTML='';
+  for(let i=0;i<=10;i++){
+    const dot=document.createElement('div');
+    dot.className='dor-dot'+(i===selVal?' sel':'');
+    dot.textContent=i;
+    dot.style.borderColor=dorColor(i);
+    if(i===selVal){dot.style.background=dorColor(i);}
+    dot.onclick=(()=>{
+      const v=i;
+      return ()=>{dorSel=v;buildDorBar(v);};
+    })();
+    bar.appendChild(dot);
+  }
+}
+
+// ── Render evolução list (aluno cards) ──
+function renderEvol(){
+  const el=document.getElementById('evolContent');
+  if(!alunos.length){el.innerHTML='<div class="empty">Nenhum aluno cadastrado</div>';return;}
+  let html='';
+  alunos.forEach(a=>{
+    const idx=alunos.indexOf(a), ac=AVC[idx%AVC.length];
+    const count=evolucoes.filter(e=>e.alunoId===a.id).length;
+    const last=evolucoes.filter(e=>e.alunoId===a.id).sort((x,y)=>y.data.localeCompare(x.data))[0];
+    const lastStr=last?dtLocal(last.data).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'}):'Sem anotações';
+    html+=`<div class="evol-aluno-card" onclick="openEvolDetalhe('${a.id}')">
+      ${avatarHtml(a,42,'.78rem')}
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.9rem">${a.nome}</div>
+        <div style="font-size:.72rem;color:var(--gray)">${a.modalidade}</div>
+        <div style="font-size:.68rem;color:var(--teal-dark);margin-top:2px;font-weight:600">${count} anotaç${count!==1?'ões':'ão'} · Última: ${lastStr}</div>
+      </div>
+      <div class="arr">›</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+// ── Open aluno detalhe ──
+function openEvolDetalhe(alunoId){
+  evolAlunoAtivo=alunoId;
+  const a=alunos.find(x=>x.id===alunoId); if(!a) return;
+  document.getElementById('evolDetalheName').textContent=a.nome;
+  document.getElementById('evolDetalheMod').textContent=a.modalidade;
+
+  // build mod tabs — show tabs for each modality the aluno has entries in + their current one
+  const mods=[...new Set([
+    a.modalidade.startsWith('Pilates')?'Pilates':a.modalidade.startsWith('Massagem')?'Massagem':a.modalidade,
+    ...evolucoes.filter(e=>e.alunoId===alunoId).map(e=>e.mod)
+  ])];
+  evolModAtiva=mods[0]||'Pilates';
+
+  const tabsEl=document.getElementById('evolModTabs');
+  tabsEl.innerHTML=mods.map(m=>{
+    const active=m===evolModAtiva;
+    const bg=m==='Pilates'?'var(--pink-light)':m==='Fisioterapia'?'var(--teal-light)':'var(--lav-light)';
+    const col=m==='Pilates'?'var(--pink-dark)':m==='Fisioterapia'?'var(--teal-dark)':'var(--lav)';
+    return `<button onclick="switchEvolMod('${m}')" style="padding:6px 14px;border-radius:20px;border:2px solid ${active?col:'transparent'};background:${active?bg:'#f5f5f5'};color:${active?col:'var(--gray)'};font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:${active?700:400}">${m}</button>`;
+  }).join('');
+
+  renderEvolEntries();
+  document.getElementById('evolDetalheOverlay').style.display='flex';
+}
+
+function switchEvolMod(mod){
+  evolModAtiva=mod;
+  openEvolDetalhe(evolAlunoAtivo);
+}
+
+// ── Render entries grouped by month ──
+function renderEvolEntries(){
+  const el=document.getElementById('evolDetalheContent');
+  const entries=evolucoes
+    .filter(e=>e.alunoId===evolAlunoAtivo && e.mod===evolModAtiva)
+    .sort((a,b)=>b.data.localeCompare(a.data));
+
+  if(!entries.length){
+    el.innerHTML=`<div class="empty">Nenhuma anotação em ${evolModAtiva} ainda.<br>Clique em "+ Nova Anotação" para começar.</div>`;
+    return;
+  }
+
+  let html=''; let lastMonth='';
+  entries.forEach(e=>{
+    const d=dtLocal(e.data);
+    const monthKey=MONTHS[d.getMonth()]+' '+d.getFullYear();
+    if(monthKey!==lastMonth){
+      html+=`<div class="month-header">📅 ${monthKey}</div>`;
+      lastMonth=monthKey;
+    }
+    const modCls=e.mod==='Pilates'?'evol-mod-pilates':e.mod==='Fisioterapia'?'evol-mod-fisio':'evol-mod-massa';
+    const dorHtml=e.dor!=null?`
+      <div class="evol-section">
+        <div class="evol-section-lbl">Nível de dor</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:32px;height:32px;border-radius:50%;background:${dorColor(e.dor)};color:white;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center">${e.dor}</div>
+          <div style="font-size:.78rem;color:var(--gray)">${e.dor===0?'Sem dor':e.dor<=3?'Leve':e.dor<=6?'Moderada':e.dor<=8?'Forte':'Intensa'}</div>
+        </div>
+      </div>`:'';
+    const exHtml=e.exercicios?`
+      <div class="evol-section">
+        <div class="evol-section-lbl">Exercícios realizados</div>
+        <div class="evol-section-val">${e.exercicios}</div>
+      </div>`:'';
+    const obsHtml=e.obs?`
+      <div class="evol-section">
+        <div class="evol-section-lbl">Observações</div>
+        <div class="evol-section-val">${e.obs}</div>
+      </div>`:'';
+    const fotosHtml=e.fotos&&e.fotos.length?`
+      <div class="evol-section">
+        <div class="evol-section-lbl">Fotos</div>
+        <div class="foto-preview">
+          ${e.fotos.map(f=>`<img src="${f}" class="foto-thumb" onclick="openFoto('${f}')">`).join('')}
+        </div>
+      </div>`:'';
+
+    html+=`<div class="evol-entry">
+      <div class="evol-entry-header">
+        <div>
+          <div class="evol-entry-date">${d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'long',year:'numeric'})}</div>
+          <span class="evol-entry-mod ${modCls}">${e.mod}</span>
+        </div>
+        <button class="evol-del-btn" onclick="deleteEvolEntry('${e.id}')">🗑</button>
+      </div>
+      ${dorHtml}${exHtml}${obsHtml}${fotosHtml}
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+// ── Open evolução form ──
+function openEvolForm(){
+  evolEditId=null; dorSel=null; evolFotosTemp=[];
+  const a=alunos.find(x=>x.id===evolAlunoAtivo);
+  document.getElementById('evolFormSub').textContent=a?a.nome:'';
+  document.getElementById('efData').value=todayStr;
+
+  // set mod select to match active tab
+  const modSel=document.getElementById('efMod');
+  modSel.value=evolModAtiva||'Pilates';
+
+  document.getElementById('efExercicios').value='';
+  document.getElementById('efObs').value='';
+  buildDorBar(null);
+  renderFotoPreview();
+  document.getElementById('evolFormOverlay').style.display='flex';
+}
+
+function closeEvolForm(){
+  document.getElementById('evolFormOverlay').style.display='none';
+  evolFotosTemp=[];
+}
+
+// ── Handle foto upload ──
+function handleFotos(evt){
+  const files=[...evt.target.files];
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      evolFotosTemp.push(e.target.result);
+      renderFotoPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+  evt.target.value=''; // reset input
+}
+
+function renderFotoPreview(){
+  const el=document.getElementById('fotoPreview');
+  let html=evolFotosTemp.map((f,i)=>`
+    <div style="position:relative">
+      <img src="${f}" class="foto-thumb" onclick="openFoto('${f}')">
+      <button onclick="evolFotosTemp.splice(${i},1);renderFotoPreview()" style="position:absolute;top:-6px;right:-6px;background:var(--red);border:none;border-radius:50%;width:18px;height:18px;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>`).join('');
+  html+=`<div class="foto-input-btn" onclick="document.getElementById('fotoInput').click()">
+    <span style="font-size:1.2rem">📷</span><span>Adicionar</span>
+  </div>`;
+  el.innerHTML=html;
+}
+
+function openFoto(src){
+  const fs=document.getElementById('fotoFullscreen');
+  document.getElementById('fotoFullImg').src=src;
+  fs.style.display='flex';
+}
+
+// ── Save entry ──
+function saveEvolEntry(){
+  const data=document.getElementById('efData').value;
+  const mod=document.getElementById('efMod').value;
+  const exercicios=document.getElementById('efExercicios').value.trim();
+  const obs=document.getElementById('efObs').value.trim();
+  if(!data){showToast('⚠️ Informe a data');return;}
+  if(dorSel===null && !exercicios && !obs && !evolFotosTemp.length){
+    showToast('⚠️ Preencha ao menos um campo');return;
+  }
+  evolucoes.push({
+    id:uid(),
+    alunoId:evolAlunoAtivo,
+    data,
+    mod,
+    dor:dorSel,
+    exercicios,
+    obs,
+    fotos:[...evolFotosTemp]
+  });
+  persistEvol();
+  closeEvolForm();
+  evolModAtiva=mod;
+  renderEvolEntries();
+  renderEvol();
+  showToast('✓ Anotação salva!');
+}
+
+// ── Delete entry ──
+function deleteEvolEntry(id){
+  evolucoes=evolucoes.filter(e=>e.id!==id);
+  persistEvol();
+  renderEvolEntries();
+  renderEvol();
+  showToast('🗑 Anotação removida');
+}
+
+
+function renderAll(){
+  renderHeader(); renderStats(); renderLista(); renderPayBanner();
+  if(currentView==='agenda'){renderCalendar();renderAgendaDay();}
+  if(currentView==='alunos') renderAlunos();
+  if(currentView==='faltas') renderFaltas();
+  if(currentView==='pag')    renderPag();
+  if(currentView==='hist')   renderHist();
+  if(currentView==='evol')   renderEvol();
+}
+
+
+/* ═══════════════════════════════════════
+   PRICE SUGGESTION
+═══════════════════════════════════════ */
+// ─── TABELA DE PREÇOS ───
+// Pilates: valor MENSAL por frequência e plano
+const PILATES_PRECOS={
+  Mensal:   {'3x':310, '2x':250, '1x':180},
+  Semestral:{'3x':280, '2x':210, '1x':140},
+  Anual:    {'3x':250, '2x':180, '1x':110}
+};
+const MESES_PLANO={Mensal:1, Semestral:6, Anual:12};
+
+// Fisioterapia: valor total do pacote (pago à vista)
+const FISIO_PRECOS={
+  'Avulso':100,
+  '5 Sessões':400,
+  '10 Sessões':600
+};
+
+// Massagem: valor por sessão (sempre avulso)
+const MASSA_PRECOS={
+  'Massagem Relaxante':150,
+  'Massagem Terapêutica':130
+};
+
+// Opções de plano por modalidade
+const PLANO_OPTS={
+  pilates:[
+    {v:'Mensal',       l:'Mensal (cobr. todo mês)'},
+    {v:'Semestral',    l:'Semestral (pag. único · 6 meses)'},
+    {v:'Anual',        l:'Anual (pag. único · 12 meses)'}
+  ],
+  fisio:[
+    {v:'Avulso',       l:'Avulsa (por sessão)'},
+    {v:'5 Sessões',     l:'Pacote 5 Sessões (pag. único)'},
+    {v:'10 Sessões',    l:'Pacote 10 Sessões (pag. único)'}
+  ],
+  massa:[
+    {v:'Avulso',       l:'Avulso (por sessão)'}
+  ]
+};
+
+function updatePlanoOptions(){
+  const mod=document.getElementById('aMod').value;
+  const sel=document.getElementById('aPlano');
+  const hint=safeEl('planoHint');
+  const curVal=sel.value;
+
+  let opts, tipo;
+  if(mod.startsWith('Pilates')){
+    opts=PLANO_OPTS.pilates; tipo='pilates';
+    hint.style.display='none';
+  } else if(mod==='Fisioterapia'){
+    opts=PLANO_OPTS.fisio; tipo='fisio';
+    hint.textContent='Fisioterapia: pacotes pagos à vista ou sessão avulsa';
+    hint.style.display='block';
+  } else if(mod.startsWith('Massagem')){
+    opts=PLANO_OPTS.massa; tipo='massa';
+    hint.textContent='Massagem: cobrada por sessão avulsa';
+    hint.style.display='block';
+  } else {
+    opts=PLANO_OPTS.pilates; tipo='pilates';
+    hint.style.display='none';
+  }
+
+  // rebuild options
+  sel.innerHTML=opts.map(o=>`<option value="${o.v}">${o.l}</option>`).join('');
+  // restore selection if still valid
+  const still=opts.find(o=>o.v===curVal);
+  if(still) sel.value=curVal;
+  updateProxVenc();
+  updatePreco();
+}
+
+let precoSugeridoAtual=null;
+let precoMensalAtual=null;
+
+function updatePreco(){
+  const mod=document.getElementById('aMod').value;
+  const plano=document.getElementById('aPlano').value;
+  const box=safeEl('precoSugerido');
+  const valEl=safeEl('precoSugeridoVal');
+  const descEl=safeEl('precoSugeridoDesc');
+
+  const isPilates=mod.startsWith('Pilates');
+  const isFisio=mod==='Fisioterapia';
+  const isMassa=mod.startsWith('Massagem');
+
+  let valorTotal=null, valorMensal=null, desc='', subDesc='';
+
+  if(isPilates && PILATES_PRECOS[plano]){
+    const ndow=Object.keys(selDows).length;
+    const freq=ndow>=3?'3x':ndow===2?'2x':'1x';
+    const meses=MESES_PLANO[plano]||1;
+    valorMensal=PILATES_PRECOS[plano][freq];
+    valorTotal=valorMensal*meses;
+
+    if(meses===1){
+      desc='R$ '+valorTotal.toFixed(2)+'/mês';
+      subDesc=freq+'/semana · cobrado todo mês';
+    } else {
+      desc='R$ '+valorTotal.toFixed(2)+' à vista';
+      subDesc=freq+'/sem · '+meses+'x R$'+valorMensal.toFixed(2)+'/mês · pago uma vez';
+    }
+
+  } else if(isFisio){
+    const fisioVal=FISIO_PRECOS[plano];
+    if(fisioVal!=null){
+      valorTotal=fisioVal;
+      valorMensal=valorTotal;
+      if(plano==='Avulso'){
+        desc='R$ '+valorTotal.toFixed(2)+'/sessão';
+        subDesc='cobrado por sessão realizada';
+      } else {
+        const nsess=parseInt(plano); // 5 ou 10
+        const porSessao=(valorTotal/nsess).toFixed(2);
+        desc='R$ '+valorTotal.toFixed(2)+' à vista';
+        subDesc=plano+' · R$'+porSessao+'/sessão · pago uma vez';
+      }
+    }
+
+  } else if(isMassa){
+    valorTotal=MASSA_PRECOS[mod]||null;
+    valorMensal=valorTotal;
+    if(valorTotal){
+      desc='R$ '+valorTotal.toFixed(2)+'/sessão';
+      subDesc=mod+' · cobrado por sessão';
+    }
+  }
+
+  if(valorTotal!=null){
+    valEl.textContent=desc;
+    descEl.textContent=subDesc;
+    box.style.display='block';
+    precoSugeridoAtual=valorTotal;
+    precoMensalAtual=valorMensal;
+  } else {
+    box.style.display='none';
+    precoSugeridoAtual=null;
+    precoMensalAtual=null;
+  }
+}
+
+function aplicarPreco(){
+  if(precoSugeridoAtual!=null){
+    document.getElementById('aValor').value=precoSugeridoAtual.toFixed(2);
+    showToast('✓ Valor aplicado!');
+  }
+}
+
+
+/* ═══════════════════════════════════════
+   HISTÓRICO DE PAGAMENTOS
+═══════════════════════════════════════ */
+function fmtMesAno(ds){
+  const d=dtLocal(ds);
+  return MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+function fmtDiaLong(ds){
+  return dtLocal(ds).toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+}
+
+function openHistPag(alunoId){
+  const a=alunos.find(x=>x.id===alunoId); if(!a) return;
+  document.getElementById('histPagTitle').textContent=a.nome;
+  document.getElementById('histPagSub').textContent='Plano: '+getPlanoLabel(a)+' · R$ '+getValorCorreto(a).toFixed(2);
+  const pags=histPag.filter(p=>p.alunoId===alunoId).sort((a,b)=>b.data.localeCompare(a.data));
+  const el=document.getElementById('histPagContent');
+
+  if(!pags.length){
+    el.innerHTML='<div class="empty">Nenhum pagamento registrado ainda</div>';
+    document.getElementById('histPagOverlay').style.display='flex';
+    return;
+  }
+
+  let html='';
+  pags.forEach(p=>{
+    const isMensal=p.plano==='Mensal'||p.plano==='Avulso';
+    const cor=isMensal?'var(--teal)':'var(--pink-dark)';
+    const borderCor=isMensal?'var(--green)':'var(--pink)';
+
+    // Title line
+    let titulo='';
+    if(p.plano==='Mensal'){
+      titulo=`Mensalidade · ${fmtMesAno(p.validoDe||p.data)}`;
+    } else if(p.plano==='Semestral'){
+      titulo=`Plano Semestral`;
+    } else if(p.plano==='Anual'){
+      titulo=`Plano Anual`;
+    } else if(p.plano==='5 Sessões'){
+      titulo='Pacote 5 Sessões';
+    } else if(p.plano==='10 Sessões'){
+      titulo='Pacote 10 Sessões';
+    } else {
+      titulo=p.plano;
+    }
+
+    // Validity line
+    let validLine='';
+    if(p.validoDe && p.validoAte && !isMensal){
+      validLine=`<div style="font-size:.7rem;color:var(--gray);margin-top:2px">📆 Válido de <b>${fmtMesAno(p.validoDe)}</b> até <b>${fmtMesAno(p.validoAte)}</b></div>`;
+    } else if(p.validoDe && p.validoAte && isMensal){
+      validLine=`<div style="font-size:.7rem;color:var(--gray);margin-top:2px">📆 Ref. ${fmtMesAno(p.validoDe)}</div>`;
+    }
+
+    html+=`<div style="background:var(--white);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(212,120,158,.08);border-left:4px solid ${borderCor}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:.92rem;color:var(--text)">${titulo}</div>
+          <div style="font-size:.72rem;color:var(--gray);margin-top:2px">✅ Pago em ${fmtDiaLong(p.data)}</div>
+          ${validLine}
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-weight:700;font-size:1.05rem;color:${cor}">R$ ${Number(p.valor).toFixed(2)}</div>
+          <div style="font-size:.62rem;color:#aaa;margin-top:2px">${p.plano}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // Total
+  const total=pags.reduce((s,p)=>s+Number(p.valor),0);
+  html+=`<div style="background:linear-gradient(135deg,var(--teal-light),var(--pink-light));border-radius:14px;padding:14px;margin-top:4px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray)">Total recebido</div>
+      <div style="font-size:.72rem;color:var(--gray)">${pags.length} pagamento${pags.length>1?'s':''}</div>
+    </div>
+    <div style="font-size:1.3rem;font-weight:700;color:var(--teal-dark)">R$ ${total.toFixed(2)}</div>
+  </div>`;
+
+  el.innerHTML=html;
+  document.getElementById('histPagOverlay').style.display='flex';
+}
+
+renderAll();
+
+// ── AUTOSAVE: persist on any meaningful user action ──
+// Already handled via persist() calls in save functions.
+// Also persist when evolucoes change (persistEvol already calls its own storage).
+// Add window beforeunload safety net:
+window.addEventListener('beforeunload', function(){
+  localStorage.setItem('gz4_appts',JSON.stringify(appts));
+  localStorage.setItem('gz4_alunos',JSON.stringify(alunos));
+  localStorage.setItem('gz4_faltas',JSON.stringify(faltas));
+  localStorage.setItem('gz4_histpag',JSON.stringify(histPag));
+  localStorage.setItem('gz4_sessoes',JSON.stringify(sessoesPend));
+});
+
+
+/* ═══════════════════════════════════════
+   RELATÓRIO
+═══════════════════════════════════════ */
+function renderRelatorio(){
+  const el=document.getElementById('relatorioContent');
+  const hoje=new Date();
+  const mesAtual=hoje.getMonth();
+  const anoAtual=hoje.getFullYear();
+
+  // Faturamento por mês (últimos 6 meses)
+  const fatMap={};
+  histPag.forEach(p=>{
+    const d=new Date(p.data+'T12:00:00');
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    fatMap[key]=(fatMap[key]||0)+(p.valor||0);
+  });
+  const meses=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date(anoAtual,mesAtual-i,1);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const lbl=d.toLocaleDateString('pt-BR',{month:'short',year:'numeric'});
+    meses.push({key,lbl,val:fatMap[key]||0});
+  }
+  const totalFat=meses.reduce((s,m)=>s+m.val,0);
+  const maxFat=Math.max(...meses.map(m=>m.val),1);
+
+  // Alunos por status
+  const ativos=alunos.filter(a=>a.proxVenc&&diffDays(a.proxVenc,todayStr)>=-30);
+  const vencidos=alunos.filter(a=>a.proxVenc&&diffDays(a.proxVenc,todayStr)<0);
+  const emDia=alunos.filter(a=>a.proxVenc&&diffDays(a.proxVenc,todayStr)>5);
+  const aVencer=alunos.filter(a=>a.proxVenc&&diffDays(a.proxVenc,todayStr)>=0&&diffDays(a.proxVenc,todayStr)<=5);
+
+  // Faltas
+  const totalFaltas=faltas.length;
+  const semAviso=faltas.filter(f=>f.motivo==='faltou').length;
+  const comAviso=faltas.filter(f=>f.motivo==='avisou').length;
+  const repostas=faltas.filter(f=>f.reposta).length;
+
+  el.innerHTML=`
+  <!-- BACKUP BANNER -->
+  <div style="background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:16px;margin:0 16px 14px;color:white">
+    <div style="font-size:.75rem;font-weight:700;margin-bottom:4px">🔒 Seus dados ficam salvos neste aparelho</div>
+    <div style="font-size:.7rem;opacity:.85;margin-bottom:12px">Faça backup regularmente para não perder nada se trocar de celular ou limpar o cache.</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="fazerBackup()" style="flex:1;padding:10px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);border-radius:10px;color:white;font-size:.78rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;">💾 Fazer Backup</button>
+      <label style="flex:1;padding:10px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);border-radius:10px;color:white;font-size:.78rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;text-align:center">
+        📂 Restaurar
+        <input type="file" accept=".json" onchange="restaurarBackup(event)" style="display:none">
+      </label>
+    </div>
+  </div>
+
+  <!-- EXPORT BUTTONS -->
+  <div style="display:flex;gap:10px;margin:0 16px 14px">
+    <button onclick="exportarPDF()" style="flex:1;padding:12px;background:var(--red);border:none;border-radius:12px;color:white;font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;">📄 Exportar PDF</button>
+    <button onclick="exportarExcel()" style="flex:1;padding:12px;background:#1d6f42;border:none;border-radius:12px;color:white;font-size:.82rem;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;">📊 Exportar Excel</button>
+  </div>
+
+  <!-- FATURAMENTO -->
+  <div style="background:white;border-radius:16px;padding:16px;margin:0 16px 14px;box-shadow:0 2px 8px rgba(212,120,158,.07)">
+    <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:12px">💰 Faturamento — Últimos 6 meses</div>
+    <div style="font-size:1.4rem;font-weight:700;color:var(--green);margin-bottom:14px">R$ ${totalFat.toFixed(2)} <span style="font-size:.72rem;color:var(--gray);font-weight:400">total no período</span></div>
+    ${meses.map(m=>`
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px">
+          <span style="color:var(--text);font-weight:500">${m.lbl}</span>
+          <span style="color:var(--green);font-weight:700">R$ ${m.val.toFixed(2)}</span>
+        </div>
+        <div style="background:#f0f0f0;border-radius:20px;height:7px">
+          <div style="width:${Math.round((m.val/maxFat)*100)}%;background:var(--green);height:100%;border-radius:20px;transition:width .4s"></div>
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <!-- ALUNOS -->
+  <div style="background:white;border-radius:16px;padding:16px;margin:0 16px 14px;box-shadow:0 2px 8px rgba(212,120,158,.07)">
+    <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:12px">👥 Alunos — ${alunos.length} cadastrados</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="background:var(--green-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--green)">${emDia.length}</div>
+        <div style="font-size:.68rem;color:var(--green)">Em dia</div>
+      </div>
+      <div style="background:var(--warn-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--warn)">${aVencer.length}</div>
+        <div style="font-size:.68rem;color:var(--warn)">A vencer</div>
+      </div>
+      <div style="background:var(--red-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--red)">${vencidos.length}</div>
+        <div style="font-size:.68rem;color:var(--red)">Vencidos</div>
+      </div>
+      <div style="background:var(--pink-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--pink)">${alunos.length}</div>
+        <div style="font-size:.68rem;color:var(--pink)">Total</div>
+      </div>
+    </div>
+    ${alunos.map(a=>{
+      const d=a.proxVenc?diffDays(a.proxVenc,todayStr):999;
+      const status=d<0?'🔴 Vencido':d<=5?'🟡 A vencer':'🟢 Em dia';
+      const srvs=a.servicos&&a.servicos.length?a.servicos:[{modalidade:a.modalidade,plano:a.plano}];
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f5f5f5">
+        <div style="display:flex;align-items:center;gap:8px">
+          ${avatarHtml(a,32,'.65rem')}
+          <div>
+            <div style="font-size:.82rem;font-weight:600">${a.nome}</div>
+            <div style="font-size:.68rem;color:var(--gray)">${srvs.map(s=>s.modalidade).join(' · ')}</div>
+          </div>
+        </div>
+        <div style="font-size:.72rem;text-align:right">
+          <div>${status}</div>
+          <div style="color:var(--gray)">${a.proxVenc?dtLocal(a.proxVenc).toLocaleDateString('pt-BR',{day:'numeric',month:'short'}):''}</div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <!-- FALTAS -->
+  <div style="background:white;border-radius:16px;padding:16px;margin:0 16px 14px;box-shadow:0 2px 8px rgba(212,120,158,.07)">
+    <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:12px">📌 Faltas — Total: ${totalFaltas}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="background:var(--red-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.3rem;font-weight:700;color:var(--red)">${semAviso}</div>
+        <div style="font-size:.62rem;color:var(--red)">Sem aviso</div>
+      </div>
+      <div style="background:var(--orange-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.3rem;font-weight:700;color:var(--orange)">${comAviso}</div>
+        <div style="font-size:.62rem;color:var(--orange)">Com aviso</div>
+      </div>
+      <div style="background:var(--green-light);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:1.3rem;font-weight:700;color:var(--green)">${repostas}</div>
+        <div style="font-size:.62rem;color:var(--green)">Repostas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTALAR COMO APP -->
+  <div style="background:white;border-radius:16px;padding:16px;margin:0 16px 14px;box-shadow:0 2px 8px rgba(212,120,158,.07)">
+    <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:12px">📲 Instalar como App no iPhone</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:32px;height:32px;background:var(--pink-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">1</div>
+        <div style="font-size:.8rem;color:var(--text)">Abra este arquivo no <strong>Safari</strong> (não funciona no Chrome)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:32px;height:32px;background:var(--pink-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">2</div>
+        <div style="font-size:.8rem;color:var(--text)">Toque no botão <strong>Compartilhar</strong> <span style="background:#f0f0f0;padding:2px 8px;border-radius:6px;font-size:.9rem">⬆️</span> na barra inferior</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:32px;height:32px;background:var(--pink-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">3</div>
+        <div style="font-size:.8rem;color:var(--text)">Role a lista e toque em <strong>"Adicionar à Tela de Início"</strong> <span style="background:#f0f0f0;padding:2px 8px;border-radius:6px;font-size:.75rem">＋</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:32px;height:32px;background:var(--pink-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">4</div>
+        <div style="font-size:.8rem;color:var(--text)">Toque em <strong>"Adicionar"</strong> no canto superior direito — pronto! 🌸</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;background:var(--pink-light);border-radius:10px;padding:10px;font-size:.72rem;color:var(--pink-dark)">
+      💡 O app vai aparecer na sua tela inicial igual qualquer outro app, abre sem barra do navegador e funciona sem internet!
+    </div>
+  </div>
+
+  <!-- HISTÓRICO PAGAMENTOS -->
+  <div style="background:white;border-radius:16px;padding:16px;margin:0 16px 80px;box-shadow:0 2px 8px rgba(212,120,158,.07)">
+    <div style="font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:12px">🗂 Últimos pagamentos</div>
+    ${[...histPag].reverse().slice(0,10).map(p=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f5f5f5">
+        <div>
+          <div style="font-size:.8rem;font-weight:600">${p.aluno}</div>
+          <div style="font-size:.67rem;color:var(--gray)">${p.modalidade||''} · ${p.plano||''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.82rem;font-weight:700;color:var(--green)">R$ ${(p.valor||0).toFixed(2)}</div>
+          <div style="font-size:.67rem;color:var(--gray)">${p.data?dtLocal(p.data).toLocaleDateString('pt-BR',{day:'numeric',month:'short',year:'numeric'}):''}</div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function exportarPDF(){
+  const d=new Date();
+  const dataStr=d.toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+  const totalFat=histPag.reduce((s,p)=>s+(p.valor||0),0);
+
+  let rows_pag=histPag.slice().reverse().map(p=>`<tr>
+    <td>${p.aluno||''}</td><td>${p.modalidade||''}</td><td>${p.plano||''}</td>
+    <td>R$ ${(p.valor||0).toFixed(2)}</td>
+    <td>${p.data?dtLocal(p.data).toLocaleDateString('pt-BR'):''}</td></tr>`).join('');
+
+  let rows_alunos=alunos.map(a=>{
+    const d2=a.proxVenc?diffDays(a.proxVenc,todayStr):999;
+    const st=d2<0?'Vencido':d2<=5?'A vencer':'Em dia';
+    const srvs=a.servicos&&a.servicos.length?a.servicos:[{modalidade:a.modalidade,plano:a.plano}];
+    return `<tr><td>${a.nome}</td><td>${srvs.map(s=>s.modalidade).join(', ')}</td>
+    <td>${srvs.map(s=>s.plano).join(', ')}</td>
+    <td>${a.matricula?dtLocal(a.matricula).toLocaleDateString('pt-BR'):'-'}</td>
+    <td>${a.proxVenc?dtLocal(a.proxVenc).toLocaleDateString('pt-BR'):'-'}</td>
+    <td>${st}</td></tr>`;}).join('');
+
+  let rows_faltas=faltas.map(f=>`<tr>
+    <td>${f.aluno}</td>
+    <td>${f.data?dtLocal(f.data).toLocaleDateString('pt-BR'):''}</td>
+    <td>${f.motivo==='faltou'?'Sem aviso':'Com aviso'}</td>
+    <td>${f.reposta?'Sim':'Não'}</td>
+    <td>${f.obs||''}</td></tr>`).join('');
+
+  const css=`body{font-family:Arial,sans-serif;color:#333;padding:20px;font-size:12px}
+    h1{color:#d4789e;border-bottom:2px solid #d4789e;padding-bottom:6px;font-size:18px}
+    h2{color:#5ba4a4;font-size:14px;margin-top:20px}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th{background:#f5e6ef;color:#b85c82;padding:6px 8px;text-align:left}
+    td{padding:5px 8px;border-bottom:1px solid #eee}
+    .total{color:#2da88a;font-size:16px;font-weight:700}`;
+
+  const html=`<html><head><meta charset="UTF-8"><style>${css}</style></head><body>
+    <h1>📊 Relatório — Graziély Regina</h1>
+    <p style="color:#888">Gerado em ${dataStr}</p>
+    <h2>💰 Faturamento Total</h2>
+    <p class="total">R$ ${totalFat.toFixed(2)}</p>
+    <table><tr><th>Aluno</th><th>Modalidade</th><th>Plano</th><th>Valor</th><th>Data</th></tr>${rows_pag}</table>
+    <h2>👥 Alunos (${alunos.length})</h2>
+    <table><tr><th>Nome</th><th>Modalidade</th><th>Plano</th><th>Matrícula</th><th>Vencimento</th><th>Status</th></tr>${rows_alunos}</table>
+    <h2>📌 Faltas (${faltas.length})</h2>
+    <table><tr><th>Aluno</th><th>Data</th><th>Motivo</th><th>Reposta</th><th>Obs</th></tr>${rows_faltas}</table>
+    </body></html>`;
+
+  // Create hidden iframe to print without popup blocker
+  let iframe=document.getElementById('_printFrame');
+  if(!iframe){
+    iframe=document.createElement('iframe');
+    iframe.id='_printFrame';
+    iframe.style.cssText='position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;';
+    document.body.appendChild(iframe);
+  }
+  iframe.srcdoc=html;
+  iframe.onload=function(){
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+  };
+  showToast('🖨 Abrindo impressão...');
+}
+function exportarExcel(){
+  if(typeof XLSX==='undefined'){showToast('⚠️ Aguarde carregar o Excel...');return;}
+  const wb=XLSX.utils.book_new();
+
+  // Aba Alunos
+  const alunosData=[['Nome','Modalidade','Plano','Matrícula','Vencimento','WhatsApp','Foco','Obs']];
+  alunos.forEach(a=>{
+    const srvs=a.servicos&&a.servicos.length?a.servicos:[{modalidade:a.modalidade,plano:a.plano}];
+    alunosData.push([
+      a.nome,
+      srvs.map(s=>s.modalidade).join(', '),
+      srvs.map(s=>s.plano).join(', '),
+      a.matricula?dtLocal(a.matricula).toLocaleDateString('pt-BR'):'',
+      a.proxVenc?dtLocal(a.proxVenc).toLocaleDateString('pt-BR'):'',
+      a.whatsapp||'',
+      a.foco||'',
+      a.obs||''
+    ]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(alunosData), 'Alunos');
+
+  // Aba Pagamentos
+  const pagData=[['Aluno','Modalidade','Plano','Valor','Data']];
+  [...histPag].reverse().forEach(p=>{
+    pagData.push([
+      p.aluno||'',
+      p.modalidade||'',
+      p.plano||'',
+      p.valor||0,
+      p.data?dtLocal(p.data).toLocaleDateString('pt-BR'):''
+    ]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(pagData), 'Pagamentos');
+
+  // Aba Faltas
+  const faltasData=[['Aluno','Data','Motivo','Reposta','Obs']];
+  faltas.forEach(f=>{
+    faltasData.push([
+      f.aluno,
+      f.data?dtLocal(f.data).toLocaleDateString('pt-BR'):'',
+      f.motivo==='faltou'?'Sem aviso':'Com aviso',
+      f.reposta?'Sim':'Não',
+      f.obs||''
+    ]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(faltasData), 'Faltas');
+
+  // Aba Aulas
+  const aulasData=[['Aluno','Data','Início','Fim','Modalidade','Tipo','Obs']];
+  [...appts].sort((a,b)=>b.date.localeCompare(a.date)).forEach(a=>{
+    aulasData.push([
+      a.aluno,
+      a.date?dtLocal(a.date).toLocaleDateString('pt-BR'):'',
+      a.start||'',
+      a.end||'',
+      a.modalidade||'',
+      a.fixo?'Fixo':a.rep?'Reposição':'Avulso',
+      a.obs||''
+    ]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aulasData), 'Aulas');
+
+  const d=new Date();
+  const fname='Agenda_Graziely_'+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'.xlsx';
+  XLSX.writeFile(wb, fname);
+  showToast('✓ Excel exportado!');
+}
+
+
+
+
+/* ═══════════════════════════════════════
+   BACKUP & RESTAURAÇÃO
+═══════════════════════════════════════ */
+function fazerBackup(){
+  const d=new Date();
+  const stamp=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  const backup={
+    versao:'gz4',
+    geradoEm:d.toISOString(),
+    alunos,
+    appts,
+    faltas,
+    histPag,
+    sessoesPend,
+    evolucoes:JSON.parse(localStorage.getItem('gz4_evolucoes')||'[]'),
+  };
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='Agenda_Graziely_backup_'+stamp+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('💾 Backup salvo! Guarde o arquivo com segurança.');
+}
+
+function restaurarBackup(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.versao!=='gz4'){
+        showToast('⚠️ Arquivo inválido ou de versão diferente.');
+        return;
+      }
+      if(!confirm('Tem certeza? Isso vai substituir TODOS os dados atuais pelo backup.')){
+        return;
+      }
+      // Restore all data
+      alunos=data.alunos||[];
+      appts=data.appts||[];
+      faltas=data.faltas||[];
+      histPag=data.histPag||[];
+      sessoesPend=data.sessoesPend||[];
+      if(data.evolucoes) localStorage.setItem('gz4_evolucoes',JSON.stringify(data.evolucoes));
+      persist();
+      renderAll();
+      showToast('✓ Backup restaurado com sucesso! '+alunos.length+' alunos, '+appts.length+' aulas.');
+    } catch(err){
+      showToast('⚠️ Erro ao ler o arquivo. Verifique se é um backup válido.');
+    }
+  };
+  reader.readAsText(file);
+  // reset input
+  event.target.value='';
+}
+
+
+</script>
+</body>
+</html>
